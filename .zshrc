@@ -123,3 +123,5 @@ source $ZSH/oh-my-zsh.sh
 
 # custom env variables
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
+
+alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
