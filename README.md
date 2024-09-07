@@ -1,3 +1,4 @@
 ## dotfiles
 *_note_*  
-please fix nvim it is so trash
+um just tmux i guess..  
+nvim could use more but its very usable at this point so its whatevr
