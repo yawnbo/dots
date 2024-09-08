@@ -37,6 +37,8 @@ vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
+vim.g.airline_powerline_fonts = 1
+-- make AirlineTheme deus' on startup
 -- maps
 
 --clear highlight on search in norm
@@ -289,6 +291,7 @@ require("lazy").setup({
 	{ "alaviss/nim.nvim", lazy = false },
 	{ "neovim/nvim-lspconfig", lazy = false },
 	{ "vim-airline/vim-airline", lazy = false },
+	{ "vim-airline/vim-airline-themes" },
 
 	-- THIS IS GOING TO LOOK FUCKED
 	{
