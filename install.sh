@@ -8,7 +8,7 @@ cp -f .tmux.conf ~/
 cp -f .vimrc ~/
 cp -f .zshrc ~/
 cp -f .p10k.zsh ~/
-
 # these should be xdg_config_home or whatever but ion feel like it
 cp -f .config/nvim/init.lua ~/.config/nvim/init.lua
 cp -f .config/tmux/tmux.conf ~/.config/tmux/tmux.conf
+cp -f .config/starship.toml ~/.config/starship.toml
