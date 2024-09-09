@@ -779,4 +779,5 @@ require("copilot").setup({
 	server_opts_overrides = {},
 })
 -- set colorscheme for overall vim
+vim.cmd("AirlineTheme deus")
 vim.cmd("colorscheme kanagawa")
