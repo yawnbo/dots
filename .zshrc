@@ -19,7 +19,7 @@ export EDITOR=nvim
 #ZSH_THEME="agnoster"
 
 #alt p10k
-ZSH_THEME="powerlevel10k/powerlevel10k"
+#ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -116,10 +116,10 @@ source $ZSH/oh-my-zsh.sh
 #source ~/src/themes/heap.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+#[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # custom env variables
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
-#eval "$(starship init zsh)"
+eval "$(starship init zsh)"
