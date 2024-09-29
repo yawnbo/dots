@@ -121,5 +121,6 @@ source $ZSH/oh-my-zsh.sh
 # custom env variables
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 
+alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
 eval "$(starship init zsh)"

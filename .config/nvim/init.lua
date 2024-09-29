@@ -69,6 +69,7 @@ require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "tpope/vim-sleuth" },
 	--{ "github/copilot.vim" },
+	{ "mhinz/vim-startify" },
 	{ "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
 	{
 		"zbirenbaum/copilot-cmp",
@@ -226,13 +227,13 @@ require("lazy").setup({
 			require("telescope").setup({
 				-- You can put your default mappings / updates / etc. in here
 				--  All the info you're looking for is in `:help telescope.setup()`
-				--
-				-- defaults = {
-				--   mappings = {
-				--     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-				--   },
-				-- },
-				-- pickers = {}
+
+				defaults = {
+					mappings = {
+						i = { ["<c-enter>"] = "to_fuzzy_refine" },
+					},
+				},
+				pickers = {},
 				extensions = {
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
@@ -474,10 +475,10 @@ require("lazy").setup({
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				-- clangd = {},
-				-- gopls = {},
-				-- pyright = {},
-				-- rust_analyzer = {},
+				clangd = {},
+				gopls = {},
+				pyright = {},
+				rust_analyzer = {},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -486,7 +487,7 @@ require("lazy").setup({
 				-- But for many setups, the LSP (`tsserver`) will work just fine
 				-- tsserver = {},
 				--
-
+				jdtls = {},
 				lua_ls = {
 					-- cmd = {...},
 					-- filetypes = { ...},
@@ -520,6 +521,7 @@ require("lazy").setup({
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 			require("mason-lspconfig").setup({
+				ensure_installed = { "jdtls" },
 				handlers = {
 					function(server_name)
 						local server = servers[server_name] or {}
@@ -576,7 +578,9 @@ require("lazy").setup({
 			},
 		},
 	},
-
+	{ "hrsh7th/cmp-buffer" },
+	{ "hrsh7th/cmp-cmdline" },
+	{ "mfussenegger/nvim-jdtls" },
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
