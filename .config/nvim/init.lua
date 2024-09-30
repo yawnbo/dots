@@ -68,7 +68,14 @@ end)
 require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "tpope/vim-sleuth" },
-	{ "m4xshen/autoclose.nvim" },
+	{
+		"altermo/ultimate-autopair.nvim",
+		event = { "InsertEnter", "CmdlineEnter" },
+		branch = "v0.6", --recommended as each new version will have breaking changes
+		opts = {
+			--Config goes here
+		},
+	},
 	--{ "github/copilot.vim" },
 	{ "mhinz/vim-startify" },
 	{ "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
