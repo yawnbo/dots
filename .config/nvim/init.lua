@@ -68,6 +68,7 @@ end)
 require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "tpope/vim-sleuth" },
+	{ "m4xshen/autoclose.nvim" },
 	--{ "github/copilot.vim" },
 	{ "mhinz/vim-startify" },
 	{ "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
@@ -475,7 +476,12 @@ require("lazy").setup({
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				clangd = {},
+				clangd = {
+					cmd = {
+						"clangd",
+						"--offset-encoding=utf-16",
+					},
+				},
 				gopls = {},
 				pyright = {},
 				rust_analyzer = {},
@@ -521,7 +527,6 @@ require("lazy").setup({
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 			require("mason-lspconfig").setup({
-				ensure_installed = { "jdtls" },
 				handlers = {
 					function(server_name)
 						local server = servers[server_name] or {}
