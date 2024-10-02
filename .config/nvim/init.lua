@@ -15,7 +15,8 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.have_nerd_font = true
-
+vim.opt.termguicolors = true
+vim.g.airline_extensions_tabline_enabled = 0
 -- opts
 vim.opt.number = true
 vim.opt.mouse = "a"
@@ -36,6 +37,13 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
+
+-- keybinds for buffers
+vim.api.nvim_set_keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>b", ":buffers<CR>:b ", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>bd", ":bd<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>bo", ":tabonly<CR>", { noremap = true, silent = true })
 
 vim.g.airline_powerline_fonts = 1
 -- make AirlineTheme deus' on startup
@@ -67,6 +75,7 @@ end)
 -- lazy init list of plugs
 require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
+	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
 	{ "tpope/vim-sleuth" },
 	{
 		"altermo/ultimate-autopair.nvim",
@@ -796,5 +805,13 @@ require("copilot").setup({
 	server_opts_overrides = {},
 })
 -- set colorscheme for overall vim
+require("bufferline").setup({
+	options = {
+		mode = "buffers",
+		themable = true,
+		color_icons = true,
+		separator_style = "slant",
+	},
+})
 vim.cmd("AirlineTheme deus")
 vim.cmd("colorscheme kanagawa")
