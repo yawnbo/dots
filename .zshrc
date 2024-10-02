@@ -119,8 +119,11 @@ source $ZSH/oh-my-zsh.sh
 #[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # custom env variables
-export ELECTRON_OZONE_PLATFORM_HINT=wayland
+#export ELECTRON_OZONE_PLATFORM_HINT=wayland
 
+if command -v tmux &> /dev/null && [ -z "$TMUX"  ]; then
+  exec tmux
+fi
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
 eval "$(starship init zsh)"
