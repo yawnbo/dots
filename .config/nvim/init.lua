@@ -18,6 +18,8 @@ vim.g.have_nerd_font = true
 vim.opt.termguicolors = true
 vim.g.airline_extensions_tabline_enabled = 0
 -- opts
+vim.o.wildmenu = true
+vim.o.wildmode = "list:list"
 vim.opt.number = true
 vim.opt.mouse = "a"
 vim.opt.showmode = false
@@ -821,10 +823,20 @@ require("copilot").setup({
 -- set colorscheme for overall vim
 require("bufferline").setup({
 	options = {
-		mode = "buffers",
 		themable = true,
-		color_icons = true,
-		separator_style = "slant",
+		indicator = { style = "icon", icon = "▎" },
+		separator_style = { "", "" },
+		buffer_close_icon = "",
+		modified_icon = "●",
+		close_icon = "",
+		left_trunc_marker = "",
+		right_trunc_marker = "",
+		max_name_length = 20,
+		max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+		tab_size = 22,
+		show_buffer_close_icons = true,
+		show_close_icon = true,
+		always_show_bufferline = true,
 	},
 })
 vim.cmd("AirlineTheme deus")
