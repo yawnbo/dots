@@ -1,6 +1,7 @@
 ## dotfiles
 *_note_*  
-these are probably NOT stable  
+these are probably ~~NOT~~ stable  
+read through install script before using plz
 ### fix (still)  
-um just tmux i guess..  
-nvim could use more but its very usable at this point so its whatevr
+brackets are so annoying find a way to fix the highlighting and autopair being stupid  
+maybe change telescope keybinds  
