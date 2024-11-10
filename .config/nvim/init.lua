@@ -19,7 +19,33 @@ vim.opt.termguicolors = true
 vim.g.airline_extensions_tabline_enabled = 0
 -- opts
 vim.o.wildmenu = true
-vim.o.wildmode = "list:list"
+vim.o.wildmode = "list:longest,list:full"
+vim.opt.breakindent = true
+vim.opt.breakindentopt = { shift = 2 }
+vim.opt.showbreak = "↳"
+vim.opt.splitbelow = true
+vim.opt.splitright = true
+vim.opt.wildignore:append({ ".javac", "node_modules", "*.pyc" })
+vim.opt.wildignore:append({ ".aux", ".out", ".toc" })
+vim.opt.wildignore:append({
+	".o",
+	".obj",
+	".dll",
+	".exe",
+	".so",
+	".a",
+	".lib",
+	".pyc",
+	".pyo",
+	".pyd",
+	".swp",
+	".swo",
+	".class",
+	".DS_Store",
+	".git",
+	".hg",
+	".orig",
+})
 vim.opt.number = true
 vim.opt.mouse = "a"
 vim.opt.showmode = false
@@ -42,6 +68,8 @@ vim.opt.scrolloff = 10
 vim.o.tabstop = 3
 vim.o.shiftwidth = 2
 
+-- latex stuff
+vim.cmd("filetype plugin on")
 -- keybinds for buffers
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
@@ -50,8 +78,6 @@ vim.api.nvim_set_keymap("n", "<leader>bd", ":bd<CR>", { noremap = true, silent =
 vim.api.nvim_set_keymap("n", "<leader>bo", ":tabonly<CR>", { noremap = true, silent = true })
 
 vim.g.airline_powerline_fonts = 1
--- make AirlineTheme deus' on startup
--- maps
 
 --clear highlight on search in norm
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
@@ -62,7 +88,7 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
---vim.keymap.set("n", "leader-t", 
+--vim.keymap.set("n", "leader-t",
 --highlight yanks
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
@@ -85,6 +111,21 @@ require("lazy").setup({
 
 	-- end themes
 
+	-- latex stuff
+	{
+		"lervag/vimtex",
+		ft = "tex",
+		lazy = false, -- we don't want to lazy load VimTeX
+		-- tag = "v2.15", -- uncomment to pin to a specific release
+		init = function()
+			-- VimTeX configuration goes here, e.g.
+			vim.g.vimtex_compiler_method = "latexmk"
+			vim.g.vimtex_view_method = "zathura"
+			vim.g.vimtex_format_enabled = 1
+			vim.g.maplocalleader = "\\"
+		end,
+	},
+	{ "glacambre/firenvim", build = ":call firenvim#install(0)" },
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
 	{ "tpope/vim-sleuth" },
 	{
@@ -105,7 +146,6 @@ require("lazy").setup({
 		-- use opts = {} for passing setup options
 		-- this is equivalent to setup({}) function
 	},
-	--{ "github/copilot.vim" },
 	{ "mhinz/vim-startify" },
 	{ "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
 	{
