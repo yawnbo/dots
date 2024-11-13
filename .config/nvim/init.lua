@@ -122,11 +122,14 @@ require("lazy").setup({
 		-- tag = "v2.15", -- uncomment to pin to a specific release
 		init = function()
 			-- VimTeX configuration goes here, e.g.
+			vim.g.tex_flavor = "latex"
 			vim.g.vimtex_compiler_method = "latexmk"
 			vim.g.vimtex_view_method = "sioyek"
 			vim.g.vimtex_format_enabled = 1
 			vim.g.maplocalleader = "\\"
 			vim.g.vimtex_quickfix_mode = 0
+			vim.o.conceallevel = 1
+			vim.g.tex_conceal = "adbmg"
 			-- ultisnip inits
 			vim.g.UltiSnipsExpandTrigger = "<tab>"
 			vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
