@@ -108,10 +108,13 @@ require("lazy").setup({
 	--themes setup
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "navarasu/onedark.nvim", priority = 1000 },
-
 	-- end themes
 
+	-- PLUGIN BEGIN
 	-- latex stuff
+	{
+		"SirVer/ultisnips",
+	},
 	{
 		"lervag/vimtex",
 		ft = "tex",
@@ -120,10 +123,18 @@ require("lazy").setup({
 		init = function()
 			-- VimTeX configuration goes here, e.g.
 			vim.g.vimtex_compiler_method = "latexmk"
-			vim.g.vimtex_view_method = "zathura"
+			vim.g.vimtex_view_method = "sioyek"
 			vim.g.vimtex_format_enabled = 1
 			vim.g.maplocalleader = "\\"
+			vim.g.vimtex_quickfix_mode = 0
+			-- ultisnip inits
+			vim.g.UltiSnipsExpandTrigger = "<tab>"
+			vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
+			vim.g.UltiSnipsJumpBackwardTrigger = "<s-tab>"
 		end,
+	},
+	{
+		"honza/vim-snippets",
 	},
 	{ "glacambre/firenvim", build = ":call firenvim#install(0)" },
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
@@ -865,5 +876,14 @@ require("bufferline").setup({
 		always_show_bufferline = true,
 	},
 })
+--auto group for writing on return to normal mode late
+vim.api.nvim_create_augroup("AutoSaveTex", { clear = true })
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+	group = "AutoSaveTex",
+	pattern = "*.tex", -- Apply only to .tex files
+	command = "write", -- Save the file
+})
+
 vim.cmd("AirlineTheme deus")
 vim.cmd("colorscheme onedark")
