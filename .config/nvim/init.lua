@@ -124,13 +124,16 @@ require("lazy").setup({
 			-- VimTeX configuration goes here, e.g.
 			vim.g.tex_flavor = "latex"
 			vim.g.vimtex_compiler_method = "latexmk"
-			vim.g.vimtex_view_method = "sioyek"
+			-- NOTE: should be soiyek for macos and zathura for arch
+			-- vim.g.vimtex_view_method = "sioyek"
+			vim.g.vimtex_view_method = "zathura"
 			vim.g.vimtex_format_enabled = 1
 			vim.g.maplocalleader = "\\"
 			vim.g.vimtex_quickfix_mode = 0
 			vim.o.conceallevel = 1
 			vim.g.tex_conceal = "adbmg"
 			-- ultisnip inits
+			vim.g.ultisnips_snippet_directories = { "~/.vim/UltiSnips" }
 			vim.g.UltiSnipsExpandTrigger = "<tab>"
 			vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
 			vim.g.UltiSnipsJumpBackwardTrigger = "<s-tab>"
