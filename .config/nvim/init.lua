@@ -125,8 +125,8 @@ require("lazy").setup({
 			vim.g.tex_flavor = "latex"
 			vim.g.vimtex_compiler_method = "latexmk"
 			-- NOTE: should be soiyek for macos and zathura for arch
-			-- vim.g.vimtex_view_method = "sioyek"
-			vim.g.vimtex_view_method = "zathura"
+			vim.g.vimtex_view_method = "sioyek"
+			--vim.g.vimtex_view_method = "zathura"
 			vim.g.vimtex_format_enabled = 1
 			vim.g.maplocalleader = "\\"
 			vim.g.vimtex_quickfix_mode = 0
@@ -211,6 +211,7 @@ require("lazy").setup({
 				--  If you are experiencing weird indenting issues, add the language to
 				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
 				additional_vim_regex_highlighting = { "ruby" },
+				disable = { "latex" },
 			},
 			indent = { enable = true, disable = { "ruby" } },
 		},
