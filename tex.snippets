@@ -4,7 +4,38 @@ def math():
 endglobal
 
 
-snippet template "Basic template" b
+snippet template "Customs template" b
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb}
+\title{$1}
+\author{yawnbo}
+\date{\today}
+
+\maketitle
+
+\pdfsuppresswarningpagegroup=1
+
+\begin{document}
+$0
+\end{document}
+endsnippet
+
+snippet para "Paragraph" b
+\paragraph{$1}
+$0
+endsnippet
+
+snippet psub "Subparagraph" b
+\subparagraph{$1}
+$0
+endsnippet 
+
+snippet ogtemplate "Basic template" b
 \documentclass[a4paper]{article}
 
 \usepackage[utf8]{inputenc}
@@ -32,10 +63,11 @@ snippet template "Basic template" b
 \end{document}
 endsnippet
 
-snippet beg "begin{} / end{}" bA
+snippet beg "begin{} / end{}" b
 \\begin{$1}
-	$0
+	$2
 \\end{$1}
+$0
 endsnippet
 
 priority 100
@@ -305,7 +337,7 @@ endsnippet
 
 context "math()"
 snippet rd "to the ... power" iA
-^{($1)}$0
+^{$1}$0
 endsnippet
 
 snippet __ "subscript" iA
@@ -437,7 +469,7 @@ endsnippet
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
+\\`!p snip.rv = match.group(1)`^{$1}($2)$0
 endsnippet
 
 priority 300
@@ -449,7 +481,7 @@ endsnippet
 priority 200
 context "math()"
 snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|pi|zeta|int)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
+\\`!p snip.rv = match.group(1)`^{$1}($2)$0
 endsnippet
 
 
