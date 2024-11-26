@@ -20,8 +20,6 @@ vim.g.airline_extensions_tabline_enabled = 0
 -- opts
 vim.o.wildmenu = true
 vim.o.wildmode = "list:longest,list:full"
-vim.opt.breakindent = true
-vim.opt.breakindentopt = { shift = 2 }
 vim.opt.showbreak = "↳"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
