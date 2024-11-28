@@ -818,6 +818,9 @@ require("kanagawa").setup({
 		light = "lotus",
 	},
 })
+require("nvim-autopairs").setup({
+	disable_filetype = { "tex" },
+})
 require("copilot").setup({
 	panel = {
 		enabled = true,
