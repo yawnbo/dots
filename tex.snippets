@@ -268,7 +268,7 @@ snippet bmat "bmat" iA
 endsnippet
 
 context "math()"
-snippet () "left( right)" iA
+snippet ( "left( right)" iA
 \left( ${1:${VISUAL}} \right) $0
 endsnippet
 
@@ -491,13 +491,13 @@ endsnippet
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{$1}($2)$0
+\\`!p snip.rv = match.group(1)`^{$1}(${2:x})$0
 endsnippet
 
 priority 300
 context "math()"
 snippet int "integral" iwA
-\int_{${1:-\infty}}^{${2:\infty}} ${3:${VISUAL}} $0
+\int_{${1:-\infty}}^{${2:\infty}} ${3:${VISUAL}}$0
 endsnippet
 
 priority 200
@@ -628,7 +628,7 @@ endsnippet
 
 context "math()"
 snippet tt "text" iA
-\text{$1}$0
+\text{ $1 }$0
 endsnippet
 
 context "math()"
