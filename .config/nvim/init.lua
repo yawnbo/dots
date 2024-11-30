@@ -66,7 +66,7 @@ vim.opt.scrolloff = 10
 vim.o.tabstop = 3
 vim.o.shiftwidth = 2
 
--- latex stuff
+-- latex dont know if needed or not
 vim.cmd("filetype plugin on")
 -- keybinds for buffers
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
@@ -103,12 +103,11 @@ end)
 
 -- lazy init list of plugs
 require("lazy").setup({
-	--themes setup
+	--themes
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "navarasu/onedark.nvim", priority = 1000 },
 	-- end themes
 
-	-- PLUGIN BEGIN
 	-- latex stuff
 	{
 		"SirVer/ultisnips",
@@ -122,7 +121,6 @@ require("lazy").setup({
 			-- VimTeX configuration goes here, e.g.
 			vim.g.tex_flavor = "latex"
 			vim.g.vimtex_compiler_method = "latexmk"
-			-- NOTE: should be soiyek for macos and zathura for arch
 			vim.g.vimtex_view_method = "sioyek"
 			--vim.g.vimtex_view_method = "zathura"
 			vim.g.vimtex_format_enabled = 1
@@ -140,6 +138,8 @@ require("lazy").setup({
 	{
 		"honza/vim-snippets",
 	},
+
+	-- normal plugs
 	{ "glacambre/firenvim", build = ":call firenvim#install(0)" },
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
 	{ "tpope/vim-sleuth" },
@@ -749,7 +749,7 @@ require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = { signs = false },
 	},
-	install = { colorscheme = { "kaganawa" } },
+	install = { colorscheme = { "onedark" } },
 	checker = { enabled = true },
 })
 
@@ -784,7 +784,9 @@ require("onedark").setup({
 	},
 
 	-- Custom Highlights --
-	colors = {}, -- Override default colors
+	colors = {
+		bg0 = "#282a36",
+	}, -- Override default colors
 	highlights = {}, -- Override highlight groups
 
 	-- Plugins Config --
@@ -817,9 +819,6 @@ require("kanagawa").setup({
 		dark = "dragon", -- try "dragon" !
 		light = "lotus",
 	},
-})
-require("nvim-autopairs").setup({
-	disable_filetype = { "tex" },
 })
 require("copilot").setup({
 	panel = {
@@ -889,8 +888,8 @@ vim.api.nvim_create_augroup("AutoSaveTex", { clear = true })
 
 vim.api.nvim_create_autocmd("InsertLeave", {
 	group = "AutoSaveTex",
-	pattern = "*.tex", -- Apply only to .tex files
-	command = "write", -- Save the file
+	pattern = "*.tex",
+	command = "write",
 })
 
 vim.cmd("AirlineTheme deus")
