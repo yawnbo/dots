@@ -292,7 +292,7 @@ snippet lrb "left\{ right\}" i
 \left\\{ ${1:${VISUAL}} \right\\} $0
 endsnippet
 
-snippet lr[ "left[ right]" i
+snippet [ "left[ right]" iA
 \left[ ${1:${VISUAL}} \right] $0
 endsnippet
 
@@ -491,7 +491,7 @@ endsnippet
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{$1}(${2:x})$0
+\\`!p snip.rv = match.group(1)`^{$1}( ${2:x} )$0
 endsnippet
 
 priority 300
