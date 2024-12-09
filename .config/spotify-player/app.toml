@@ -1,8 +1,8 @@
 theme = "Catppuccin-mocha"
-# insert client id here
-client_id = ""
+# PERSONAL CLIENT ID
+client_id = "6904978d8ed4483f83682a6897d5068d"
 client_port = 8080
-tracks_playback_limit = 100
+tracks_playback_limit = 500 
 playback_format = "{status} {track} • {artists}\n{album}\n{metadata}"
 notify_format = { summary = "{track} • {artists}", body = "{album}" }
 notify_timeout_in_secs = 0

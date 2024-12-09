@@ -485,13 +485,13 @@ endsnippet
 
 context "math()"
 snippet norm "norm" iA
-\|$1\|$0
+\left\| ${1:x} \right\|$0
 endsnippet
 
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{$1}( ${2:x} )$0
+\\`!p snip.rv = match.group(1)`^{$1}\left( ${2:x} \right)$0
 endsnippet
 
 priority 300
@@ -503,9 +503,8 @@ endsnippet
 priority 200
 context "math()"
 snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|pi|zeta|int)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{$1}($2)$0
+\\`!p snip.rv = match.group(1)`^{$1}\left( $2 \right)$0
 endsnippet
-
 
 priority 100
 context "math()"
