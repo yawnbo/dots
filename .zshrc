@@ -123,8 +123,17 @@ elif [[ "$(uname)" == "Linux" ]]; then
   export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout'
 fi
 # custom env variables
-export ELECTRON_OZONE_PLATFORM_HINT=wayland
 
+# maybe yazi will stay maybe not
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
 alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
