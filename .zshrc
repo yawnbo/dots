@@ -131,6 +131,6 @@ alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
-#random change
-#
+# z
+[[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
