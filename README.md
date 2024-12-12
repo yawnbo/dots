@@ -10,7 +10,7 @@ cd ~/dots
 stow --adopt . && \
 git restore .
 ```
-*__note__*  
 these are probably ~~NOT~~ stable  
 ### fix (still)  
-noting 
+Lazy needs plugin abstraction this is horrible to read  
+I think jdtls still doesn't work on arch but works on mac???  
