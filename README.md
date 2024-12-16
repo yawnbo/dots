@@ -10,7 +10,5 @@ cd ~/dots
 stow --adopt . && \
 git restore .
 ```
-these are probably ~~NOT~~ stable  
 ### fix (still)  
-Lazy needs plugin abstraction this is horrible to read  
-I think jdtls still doesn't work on arch but works on mac???  
+make alt init.lua's for different colorschemes and less clutter in plugins/install.lua
