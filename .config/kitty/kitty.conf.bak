@@ -1,5 +1,5 @@
 # BEGIN_KITTY_THEME
-# Neutron
+# Snazzy
 include current-theme.conf
 # END_KITTY_THEME
 # For themes
@@ -14,4 +14,4 @@ disable_ligatures cursor
 close_window_with_confirmation 0
 confirm_os_window_close 0
 enable_audio_bell no
-
+sync_to_monitor yes
