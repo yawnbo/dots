@@ -129,5 +129,5 @@ require("bufferline").setup({
 		always_show_bufferline = true,
 	},
 })
-vim.cmd("AirlineTheme deus")
-vim.cmd("colorscheme onedark")
+vim.cmd("AirlineTheme minimalist")
+vim.cmd("colorscheme gruvbox")

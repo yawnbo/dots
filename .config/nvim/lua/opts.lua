@@ -55,6 +55,9 @@ vim.opt.scrolloff = 10
 vim.o.tabstop = 3
 vim.o.shiftwidth = 2
 
+-- theme stuff
+vim.g.gruvbox_contrast_dark = "soft"
+vim.g.gruvbox_invert_selection = 0
 -- latex dont know if needed or not
 vim.cmd("filetype plugin on")
 -- keybinds for buffers
