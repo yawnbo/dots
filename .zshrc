@@ -143,3 +143,5 @@ alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
+
+export PATH=$PATH:/home/yawnbo/.spicetify

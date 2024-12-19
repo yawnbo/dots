@@ -63,9 +63,11 @@ require("kanagawa").setup({
 		light = "lotus",
 	},
 })
+
 require("nvim-autopairs").setup({
 	disable_filetype = { "tex" },
 })
+
 require("copilot").setup({
 	panel = {
 		enabled = true,
@@ -111,6 +113,7 @@ require("copilot").setup({
 	server_opts_overrides = {},
 })
 -- set colorscheme for overall vim
+-- :TODO: fix this to actually look decent
 require("bufferline").setup({
 	options = {
 		themable = true,
