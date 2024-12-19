@@ -1,14 +1,33 @@
 require("lazy").setup({
+	-- original header
+	--███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+	--████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+	--██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+	--██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+	--██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+	--╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
 	--themes
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "morhetz/gruvbox", lazy = true },
 	{ "navarasu/onedark.nvim", priority = 1000 },
 	-- end themes
 
+	{ "rust-lang/rust.vim", lazy = true },
+	{ "tpope/vim-surround", lazy = false },
+	{ "tpope/vim-commentary", lazy = false },
+	{ "junegunn/fzf", lazy = false },
+	{ "junegunn/fzf.vim", lazy = false },
+	{ "nvim-lua/plenary.nvim", lazy = false },
+	{ "BurntSushi/ripgrep", lazy = false },
+	{ "nvim-pack/nvim-spectre", lazy = false },
+	{ "neovim/nvim-lspconfig", lazy = false },
+	{ "vim-airline/vim-airline", lazy = false },
+	{ "vim-airline/vim-airline-themes", lazy = false },
+	-- :TODO: { "nvim-telescope/telescope-live-grep-args.nvim" },
+	-- needs setup, or whatever makes the search recursive through the given path, might also just be a fzf things
+
 	-- latex stuff
-	{
-		"SirVer/ultisnips",
-	},
+	{ "SirVer/ultisnips" },
 	{
 		"lervag/vimtex",
 		ft = "tex",
@@ -26,15 +45,13 @@ require("lazy").setup({
 			vim.o.conceallevel = 1
 			vim.g.tex_conceal = "adbmg"
 			-- ultisnip inits
-			vim.g.ultisnips_snippet_directories = { "~/.vim/UltiSnips" }
+			vim.g.ultisnips_snippet_directories = { "~/.vim/UltiSnips" } -- this line does literally nothing but nothing is broken so whatever
 			vim.g.UltiSnipsExpandTrigger = "<tab>"
 			vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
 			vim.g.UltiSnipsJumpBackwardTrigger = "<s-tab>"
 		end,
 	},
-	{
-		"honza/vim-snippets",
-	},
+	{ "honza/vim-snippets" },
 
 	-- normal plugs
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
@@ -56,13 +73,6 @@ require("lazy").setup({
 		-- use opts = {} for passing setup options
 		-- this is equivalent to setup({}) function
 	},
-	-- original header
-	--███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
-	--████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
-	--██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
-	--██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
-	--██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
-	--╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
 	{
 		"folke/snacks.nvim",
 		opts = {
@@ -308,17 +318,6 @@ require("lazy").setup({
 			end, { desc = "[S]earch [N]eovim files" })
 		end,
 	},
-	{ "rust-lang/rust.vim", lazy = true },
-	{ "tpope/vim-surround", lazy = false },
-	{ "tpope/vim-commentary", lazy = false },
-	{ "junegunn/fzf", lazy = false },
-	{ "junegunn/fzf.vim", lazy = false },
-	{ "nvim-lua/plenary.nvim", lazy = false },
-	{ "BurntSushi/ripgrep", lazy = false },
-	{ "nvim-pack/nvim-spectre", lazy = false },
-	{ "neovim/nvim-lspconfig", lazy = false },
-	{ "vim-airline/vim-airline", lazy = false },
-	{ "vim-airline/vim-airline-themes" },
 
 	{
 		"folke/lazydev.nvim",

@@ -53,7 +53,7 @@ vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 vim.o.tabstop = 3
-vim.o.shiftwidth = 2
+vim.o.shiftwidth = 3
 
 -- theme stuff
 vim.g.gruvbox_contrast_dark = "soft"
