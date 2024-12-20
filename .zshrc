@@ -118,9 +118,12 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 if [[ "$(uname)" == "Darwin" ]]; then
-  export VIMTEX_OUTPUT_DIRECTORY='/Users/yawnbo'
+  export VIMTEX_OUTPUT_DIRECTORY='/Users/yawnbo/pdfout'
 elif [[ "$(uname)" == "Linux" ]]; then
   export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout'
+	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
+	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
+	export ELECTRON_OZONE_PLATFORM_HINT=wayland
 fi
 # custom env variables
 
@@ -133,10 +136,7 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
-export ELECTRON_OZONE_PLATFORM_HINT=wayland
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
-alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
-alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
