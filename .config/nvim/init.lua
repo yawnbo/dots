@@ -16,5 +16,5 @@ vim.opt.rtp:prepend(lazypath)
 require("opts")
 
 -- lazy init list of plugs
-require("plugins.minstall")
+require("plugins.install")
 -- setup of individual plugins begin here

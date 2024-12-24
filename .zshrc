@@ -118,16 +118,16 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 if [[ "$(uname)" == "Darwin" ]]; then
-  export VIMTEX_OUTPUT_DIRECTORY='/Users/yawnbo/pdfout'
+  export VIMTEX_OUTPUT_DIRECTORY='/Users/yawnbo/pdfout/'
+
 elif [[ "$(uname)" == "Linux" ]]; then
-  export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout'
+  export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
 	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
 	export ELECTRON_OZONE_PLATFORM_HINT=wayland
 fi
 # custom env variables
 
-# maybe yazi will stay maybe not
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -136,7 +136,9 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+# this line should really be changed out for a custom latexmk with exports to the auxfiles dir in latexnotes
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
+
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
