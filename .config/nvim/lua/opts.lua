@@ -56,7 +56,7 @@ vim.o.tabstop = 3
 vim.o.shiftwidth = 3
 
 -- theme stuff
-vim.g.gruvbox_contrast_dark = "soft"
+vim.g.gruvbox_contrast_dark = "dark"
 vim.g.gruvbox_invert_selection = 0
 -- latex dont know if needed or not
 vim.cmd("filetype plugin on")

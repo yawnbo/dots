@@ -118,14 +118,14 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 if [[ "$(uname)" == "Darwin" ]]; then
-  export VIMTEX_OUTPUT_DIRECTORY='/Users/yawnbo/pdfout/'
 
 elif [[ "$(uname)" == "Linux" ]]; then
-  export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
+	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
 	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
 	export ELECTRON_OZONE_PLATFORM_HINT=wayland
 fi
+export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
 # custom env variables
 
 function y() {

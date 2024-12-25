@@ -17,4 +17,3 @@ require("opts")
 
 -- lazy init list of plugs
 require("plugins.install")
--- setup of individual plugins begin here
