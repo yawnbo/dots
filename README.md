@@ -14,9 +14,10 @@ git restore .
 ---
 
 ## Vim stuff (current)
-Maybe switch to vim instead of nvim for writing tex? This shouldn't need more than a few copy and pastes  
 trailing spaces on vim would be nice  
 some of the opts are very weird still in .vimrc  
+can the aux files and pdf storing PLEASE be fixed  
+ - this should be done with custom flag passing to latexmk i think
 
 ## Stuff that is just everything else idk
 
