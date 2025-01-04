@@ -142,6 +142,7 @@ alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
+alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
