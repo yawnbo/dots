@@ -187,7 +187,7 @@ endsnippet
 
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "symbol frac" wrA
-\\frac{`!p snip.rv = match.group(1)`}{$1}$0
+\\frac{ `!p snip.rv = match.group(1)` }{ $1 } $0
 endsnippet
 
 priority 1000
@@ -203,7 +203,7 @@ while True:
 	if depth == 0: break;
 	i-=1
 snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
-`{$1}$0
+`{ $1 } $0
 endsnippet
 
 context "math()"
@@ -213,7 +213,7 @@ endsnippet
 
 context "math()"
 snippet '([A-Za-z])_(\d\d)' "auto subscript2" wrA
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}
+`!p snip.rv = match.group(1)`_{ `!p snip.rv = match.group(2)` }
 endsnippet
 
 snippet sympy "sympyblock " w
@@ -283,6 +283,7 @@ snippet ( "left( right)" iA
 \left( ${1:${VISUAL}} \right) $0
 endsnippet
 
+context "math()"
 snippet [ "left[ right]" iA
 \left[ ${1:${VISUAL}} \right] $0
 endsnippet
@@ -477,7 +478,7 @@ endsnippet
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{$1}\left( ${2:x} \right)$0
+\\`!p snip.rv = match.group(1)`^{ $1 } \left( ${2:x} \right) $0
 endsnippet
 
 priority 300
