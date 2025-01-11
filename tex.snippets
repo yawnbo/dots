@@ -275,7 +275,7 @@ endsnippet
 
 context "math()"
 snippet { "left{ right}" iA
-\left\{ ${1:${VISUAL}} \right\} $0
+\left\\{ ${1:${VISUAL}} \right\\} $0
 endsnippet
 
 context "math()"
@@ -299,7 +299,7 @@ endsnippet
 
 context "math()"
 snippet sum "sum" iA
-\sum_{n=${1:1}}^{${2:\infty}} ${3:a_n z^n}
+\sum_{ n=${1:1} } ^{ ${2:\infty} } ${3:a_n z^n}
 endsnippet
 
 context "math()"
@@ -477,8 +477,9 @@ endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!\\)(sin|cos|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
+snippet '(?<!\\)(sin|cos|tan|sec|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
 \\`!p snip.rv = match.group(1)`^{ $1 } \left( ${2:x} \right) $0
+
 endsnippet
 
 priority 300

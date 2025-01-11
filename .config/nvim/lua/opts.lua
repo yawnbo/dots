@@ -8,7 +8,7 @@ vim.g.loaded_netrwPlugin = 1
 
 -- opts
 vim.o.wildmenu = true
-vim.o.wildmode = "list:longest,list:full"
+--vim.o.wildmode = "list:longest,list:full"
 vim.opt.showbreak = "↳"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
