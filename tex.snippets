@@ -25,11 +25,11 @@ snippet template "Customs template" b
 \title{$1}
 \author{yawnbo}
 \date{\today}
-\maketitle
 
 \pdfsuppresswarningpagegroup=1
 
 \begin{document}
+\maketitle
 $0
 \end{document}
 endsnippet
@@ -479,7 +479,6 @@ priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|tan|sec|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
 \\`!p snip.rv = match.group(1)`^{ $1 } \left( ${2:x} \right) $0
-
 endsnippet
 
 priority 300
