@@ -9,6 +9,8 @@ lalt - 5 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [
 lalt - 6 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [[ -n $SPACES[6] ]] && yabai -m space --focus $SPACES[6]
 lalt - 7 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [[ -n $SPACES[7] ]] && yabai -m space --focus $SPACES[7]
 lalt - 8 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [[ -n $SPACES[8] ]] && yabai -m space --focus $SPACES[8]
+lalt - 9 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [[ -n $SPACES[9] ]] && yabai -m space --focus $SPACES[9]
+lalt - 0 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]')) && [[ -n $SPACES[10] ]] && yabai -m space --focus $SPACES[10]
 # Window Navigation (through display borders): lalt - {j, k, l, ö}
 lalt - h    : yabai -m window --focus west  || yabai -m display --focus west
 lalt - j    : yabai -m window --focus south || yabai -m display --focus south
