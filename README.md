@@ -12,13 +12,8 @@ git restore .
 ```
 ### fix (still)  
 ---
-
-## Vim stuff (current)
-trailing spaces on vim would be nice  
-some of the opts are very weird still in .vimrc  
-can the aux files and pdf storing PLEASE be fixed  
- - this should be done with custom flag passing to latexmk i think
-
-## Stuff that is just everything else idk
-
-make alt init.lua's for different colorschemes and less clutter in plugins/install.lua
+tex skeleton for many different things, probably just look up that planetmars guy or something for that skeleton  
+get frac snippet to consume \\left and \\right  
+tmux kanagawa options to make it not so big  
+maybe copy current sketchybar to here  
+or just actually do some work instead of this idk  

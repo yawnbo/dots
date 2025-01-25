@@ -25,11 +25,11 @@ snippet template "Customs template" b
 \title{$1}
 \author{yawnbo}
 \date{\today}
+\maketitle
 
 \pdfsuppresswarningpagegroup=1
 
 \begin{document}
-\maketitle
 $0
 \end{document}
 endsnippet
@@ -299,7 +299,7 @@ endsnippet
 
 context "math()"
 snippet sum "sum" iA
-\sum_{ i=${1:1} } ^{ ${2:\infty} } ${3:a_i z^i}
+\sum_{ ${1:n}=${2:1} } ^{ ${3:\infty} } ${4:a_i z^i}
 endsnippet
 
 context "math()"
