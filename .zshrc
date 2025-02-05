@@ -124,6 +124,7 @@ elif [[ "$(uname)" == "Linux" ]]; then
 	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
 	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
 	export ELECTRON_OZONE_PLATFORM_HINT=wayland
+   alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
 # custom env variables
@@ -139,10 +140,10 @@ function y() {
 # this line should really be changed out for a custom latexmk with exports to the auxfiles dir in latexnotes
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 
+alias lg= 'lazygit'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
-alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"

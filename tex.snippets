@@ -6,6 +6,7 @@ endglobal
 snippet template "Customs template" b
 \documentclass[a4paper]{article}
 
+\usepackage{cancel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
@@ -25,11 +26,11 @@ snippet template "Customs template" b
 \title{$1}
 \author{yawnbo}
 \date{\today}
-\maketitle
 
 \pdfsuppresswarningpagegroup=1
 
 \begin{document}
+\maketitle
 $0
 \end{document}
 endsnippet
@@ -157,6 +158,16 @@ endsnippet
 context "math()"
 snippet iff "iff" Ai
 \iff
+endsnippet
+
+context "math()"
+snippet | "absolut value" wA
+\left| ${1:${VISUAL}} \right|$0
+endsnippet
+
+context "math()"
+snippet underb "underbrace" wA
+\\underbrace{ ${1:${VISUAL}} }_{ $2 } $0
 endsnippet
 
 snippet mk "math" wA
@@ -299,7 +310,7 @@ endsnippet
 
 context "math()"
 snippet sum "sum" iA
-\sum_{ ${1:n=1} } ^{ ${2:\infty} } ${3:a_i z^i}
+\sum_{ ${1:n=1} } ^{ ${2:\infty} } ${0:a_i z^i}
 endsnippet
 
 context "math()"
@@ -609,6 +620,7 @@ snippet <> "hokje" iA
 \diamond 
 endsnippet
 
+context "math()"
 snippet '(?<!i)sts' "text subscript" irA
 _\text{ $1 } $0
 endsnippet
