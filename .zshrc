@@ -140,10 +140,11 @@ function y() {
 # this line should really be changed out for a custom latexmk with exports to the auxfiles dir in latexnotes
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 
-alias lg= 'lazygit'
+alias lg='lazygit'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
+alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioyek &'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
