@@ -121,9 +121,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
 
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
-	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
-	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
-	export ELECTRON_OZONE_PLATFORM_HINT=wayland
+	#alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
+	#alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
    alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
