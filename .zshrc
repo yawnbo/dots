@@ -136,8 +136,8 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
-# this line should really be changed out for a custom latexmk with exports to the auxfiles dir in latexnotes
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
+alias skeleton='cp ~/textemp/*'
 
 alias lg='lazygit'
 alias t='tmux'
