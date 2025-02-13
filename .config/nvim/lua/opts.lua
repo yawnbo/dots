@@ -60,6 +60,7 @@ vim.g.gruvbox_contrast_dark = "dark"
 vim.g.gruvbox_invert_selection = 0
 -- latex dont know if needed or not
 vim.cmd("filetype plugin on")
+vim.g.UltiSnippetDirectories = "$HOME/.config/nvim/ultisnips"
 -- keybinds for buffers
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
