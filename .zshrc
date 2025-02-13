@@ -121,9 +121,9 @@ if [[ "$(uname)" == "Darwin" ]]; then
 
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
-	#alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
-	#alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
-   alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
+	alias shdown='/home/yawnbo/src/scripts/recordingShutdown.sh'
+	alias reboot='/home/yawnbo/src/scripts/recordingReboot.sh'
+   #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
 # custom env variables
@@ -143,9 +143,9 @@ alias lg='lazygit'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
-alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioyek &'
+alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | nohup xargs sioyek > /dev/null &2 &'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
 
-export PATH=$PATH:/home/yawnbo/.spicetify
+#export PATH=$PATH:/home/yawnbo/.spicetify

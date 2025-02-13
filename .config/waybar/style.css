@@ -62,7 +62,7 @@
 #waybar {
 	background: rgba(40, 40, 40, 0.8784313725); /* #282828e0 */
 	color: @white;
-	font-family: JetBrains Mono, Siji;
+	font-family: JetBrainsMonoNerdFontMono, Siji;
 	font-size: 10pt;
 	/*font-weight: bold;*/
 }
@@ -213,7 +213,7 @@
 #custom-arrow2 {
 	font-size: 11pt;
 	color: @date;
-	background: @layout;
+	background: @temp;
 }
 
 #custom-arrow3 {
