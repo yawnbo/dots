@@ -1,7 +1,39 @@
 global !p
 def math():
 	return vim.eval('vimtex#syntax#in_mathzone()') == '1'
+def comment():
+	reutrn vim.eval('vimtex#syntax#in_comment()') == '1'
+
+def env(name):
+	[x,y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+	return x != '0' and y != '0'
+
 endglobal
+
+snippet newtemp "Skeleton template" b
+\documentclass{report}
+
+\input{preamble}
+\input{macros}
+\input{letterfonts}
+
+\title{\Huge{${1:Calc3}}\\ }
+\author{\huge{yawnbo}}
+\date{}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+${2:\tableofcontents}
+\pagebreak
+
+\chapter{}
+$0
+\end{document}
+endsnippet 
 
 snippet template "Customs template" b
 \documentclass[a4paper]{article}
