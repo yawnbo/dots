@@ -17,9 +17,9 @@ snippet newtemp "Skeleton template" b
 \input{macros}
 \input{letterfonts}
 
-\title{\Huge{${1:Calc3}}\\ }
+\title{\Huge{${1:Calc3}}\\\\ ${2:Notes} }
 \author{\huge{yawnbo}}
-\date{}
+\date{\today}
 
 \begin{document}
 
@@ -27,7 +27,7 @@ snippet newtemp "Skeleton template" b
 \newpage% or \cleardoublepage
 % \pdfbookmark[<level>]{<title>}{<dest>}
 \pdfbookmark[section]{\contentsname}{toc}
-${2:\tableofcontents}
+${3:\tableofcontents}
 \pagebreak
 
 \chapter{}

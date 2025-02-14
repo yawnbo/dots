@@ -137,13 +137,13 @@ function y() {
 	rm -f -- "$tmp"
 }
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
-alias skeleton='cp ~/textemp/*'
+alias skeleton='cp ~/textemp/letterfonts.tex ~/textemp/macros.tex ~/textemp/preamble.tex'
 
 alias lg='lazygit'
 alias t='tmux'
 alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
-alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | nohup xargs sioyek > /dev/null &2 &'
+alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioyek > /dev/null &'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 # eval "$(starship init zsh)"
