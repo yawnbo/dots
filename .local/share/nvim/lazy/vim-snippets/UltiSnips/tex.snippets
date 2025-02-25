@@ -35,6 +35,15 @@ $0
 \end{document}
 endsnippet 
 
+snippet dfn "Definition" b
+\dfn{ ${1:Definition} }{ ${2:} } $0
+endsnippet 
+
+snippet qs "Question" b
+\qs{ ${1:Question} }{ ${2:} } $0
+endsnippet 
+
+
 snippet template "Customs template" b
 \documentclass[a4paper]{article}
 
@@ -369,7 +378,7 @@ endsnippet
 
 context "math()"
 snippet sq "\sqrt{}" iA
-\sqrt{ ${1:${VISUAL}} } $0
+\sqrt{ ${1:${VISUAL}}}$0
 endsnippet
 
 context "math()"
@@ -527,12 +536,12 @@ endsnippet
 priority 300
 context "math()"
 snippet int "integral" iwA
-\int_{ ${1:-\infty} }^{ ${2:\infty} } ${3:${VISUAL}}$0
+\int_{ ${1:-\infty} }^{ ${2:\infty} } ${0:${VISUAL}}
 endsnippet
 
 context "math()"
 snippet pi "pi" iwA
-\pi $0
+\pi
 endsnippet
 
 priority 200
