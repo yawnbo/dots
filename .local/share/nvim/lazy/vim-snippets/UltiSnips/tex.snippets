@@ -34,6 +34,11 @@ ${3:\tableofcontents}
 $0
 \end{document}
 endsnippet 
+
+snippet ex  "Example" b
+\ex{ ${1:Example} }{ ${2:} } $0
+endsnippet 
+
 snippet dfn "Definition" b
 \dfn { ${1:Definition} }{ ${2:} } $0
 endsnippet 
@@ -41,16 +46,6 @@ endsnippet
 snippet qs "Question" b
 \qs{ ${1:Question} }{ ${2:} } $0
 endsnippet 
-
-
-snippet dfn "Definition" b
-\dfn{ ${1:Definition} }{ ${2:} } $0
-endsnippet 
-
-snippet qs "Question" b
-\qs{ ${1:Question} }{ ${2:} } $0
-endsnippet 
-
 
 snippet template "Customs template" b
 \documentclass[a4paper]{article}
@@ -548,7 +543,7 @@ snippet int "integral" iwA
 endsnippet
 
 context "math()"
-snippet pi "pi" iwA
+snippet pi "pi" iA
 \pi $0
 endsnippet
 
