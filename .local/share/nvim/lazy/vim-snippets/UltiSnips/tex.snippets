@@ -533,7 +533,7 @@ endsnippet
 priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|tan|sec|arccot|cot|csc|ln|log|exp|star|perp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`^{ $1 } \left( ${2:x} \right) $0
+\\`!p snip.rv = match.group(1)`^{ $1 } \left( ${2:\theta} \right) $0
 endsnippet
 
 priority 300
@@ -544,7 +544,7 @@ endsnippet
 
 context "math()"
 snippet pi "pi" iA
-\pi $0
+\pi$0
 endsnippet
 
 priority 200
