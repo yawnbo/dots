@@ -112,30 +112,6 @@ require("copilot").setup({
 	copilot_node_command = "node", -- Node.js version must be > 18.x
 	server_opts_overrides = {},
 })
-require("gruvbox").setup({
-	terminal_colors = true, -- add neovim terminal colors
-	undercurl = true,
-	underline = true,
-	bold = true,
-	italic = {
-		strings = true,
-		emphasis = true,
-		comments = true,
-		operators = false,
-		folds = true,
-	},
-	strikethrough = true,
-	invert_selection = false,
-	invert_signs = false,
-	invert_tabline = false,
-	invert_intend_guides = false,
-	inverse = true, -- invert background for search, diffs, statuslines and errors
-	contrast = "", -- can be "hard", "soft" or empty string
-	palette_overrides = {},
-	overrides = {},
-	dim_inactive = false,
-	transparent_mode = false,
-})
 -- set colorscheme for overall vim
 -- :TODO: fix this to actually look decent
 require("bufferline").setup({
@@ -156,5 +132,5 @@ require("bufferline").setup({
 		always_show_bufferline = true,
 	},
 })
-vim.cmd("AirlineTheme minimalist")
+vim.cmd("AirlineTheme gruvbox")
 vim.cmd("colorscheme gruvbox")

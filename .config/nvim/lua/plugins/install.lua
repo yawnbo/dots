@@ -8,7 +8,7 @@ require("lazy").setup({
 	--╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
 	--themes
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
-	{ "ellisonleao/gruvbox.nvim", priority = 1000 },
+	{ "morhetz/gruvbox", lazy = true },
 	{ "navarasu/onedark.nvim", priority = 1000 },
 	-- end themes
 	{
