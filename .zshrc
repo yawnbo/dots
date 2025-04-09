@@ -149,3 +149,4 @@ alias listlines="git ls-files --exclude-standard -- ':!:**/*.[pjs][npv]g' ':!:**
 
 # eval "$(starship init zsh)"
 #export PATH=$PATH:/home/yawnbo/.spicetify
+

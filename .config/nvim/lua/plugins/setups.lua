@@ -132,6 +132,5 @@ require("bufferline").setup({
 		always_show_bufferline = true,
 	},
 })
-vim.cmd("AirlineTheme minimalist")
 -- lowkey like the other gruvbox more for a lot of color choices so review that for more changes because idk if I like the current one.
 vim.cmd("colorscheme gruvbox")
