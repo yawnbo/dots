@@ -13,5 +13,5 @@ git restore .
 ### fix (still)  
 ---  
 get frac snippet to consume \\left and \\right  
-can't think of anything else I want to add for now so  
+gruvbox.nvim instead of gruvbox.vim (will need manual configuration)  
 just actually do some work instead of this idk  
