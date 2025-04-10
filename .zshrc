@@ -118,7 +118,8 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 if [[ "$(uname)" == "Darwin" ]]; then
-
+	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
+	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin"
