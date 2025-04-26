@@ -6,6 +6,15 @@ vim.g.airline_extensions_tabline_enabled = 0
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- This works but I don't know if i like it more or less i guess we will find out
+-- ** TESTING **
+vim.o.laststatus = 0
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	command = "setlocal laststatus=0",
+})
+
 -- opts
 vim.o.wildmenu = true
 --vim.o.wildmode = "list:longest,list:full"
@@ -35,7 +44,7 @@ vim.opt.wildignore:append({
 })
 vim.opt.number = true
 vim.opt.mouse = "a"
-vim.opt.showmode = false
+vim.opt.showmode = true
 vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.ignorecase = true
