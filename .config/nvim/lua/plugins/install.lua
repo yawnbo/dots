@@ -10,6 +10,14 @@ require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "morhetz/gruvbox", lazy = true },
 	{ "navarasu/onedark.nvim", priority = 1000 },
+	{
+		"eddyekofo94/gruvbox-flat.nvim",
+		priority = 1000,
+		enabled = true,
+		config = function()
+			vim.cmd([[colorscheme gruvbox-flat]])
+		end,
+	},
 	-- end themes
 	{
 		"kdheepak/lazygit.nvim",
@@ -635,7 +643,8 @@ require("lazy").setup({
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				c = { "clangd-format" },
+				c = { "clang-format" },
+				javascript = { "clang-format" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				-- You can use 'stop_after_first' to run the first available formatter from the list
