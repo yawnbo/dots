@@ -23,3 +23,12 @@
     line-numbers-left-style = "#5a524c"
     line-numbers-right-style = "#5a524c"
     line-numbers-zero-style = "#5a524c"
+[user]
+	name = yawnbo
+	email = ownuniverse@yahoo.com
+[pull]
+	rebase = false
+[core]
+	excludesfile = /Users/yawnbo/dots/.gitignore
+[init]
+	defaultBranch = master
