@@ -1,10 +1,5 @@
 # Add this to your .gitconfig
 # NOTE: The colours are the most important but adjust other configs to your own liking
-[pager]
-    diff = delta
-    log = delta
-    reflog = delta
-    show = delta
 
 [delta]
     plus-style = "syntax #32361a"
