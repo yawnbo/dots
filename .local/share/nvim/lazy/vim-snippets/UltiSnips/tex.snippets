@@ -104,6 +104,10 @@ snippet para "Paragraph" b
 $0
 endsnippet
 
+snippet bold "bold" iA
+\mathbf{ $1 } $0
+endsnippet 
+
 snippet psub "Subparagraph" b
 \subparagraph{$1}
 $0
@@ -333,7 +337,7 @@ snippet bmat "bmat" iA
 endsnippet
 
 context "math()"
-snippet { "left{ right}" iA
+snippet { "left{ right}" i
 \left\\{ ${1:${VISUAL}} \right\\} $0
 endsnippet
 
@@ -363,7 +367,7 @@ endsnippet
 
 context "math()"
 snippet taylor "taylor" iA
-\sum_{${1:k}=${2:0}}^{${3:\infty}} ${4:c_$1} (x-a)^$1 $0
+\sum_{ ${1:k} = ${2:0} }^{ ${3:\infty} } ${4:c_$1} ( x - a )^$1 $0
 endsnippet
 
 context "math()"

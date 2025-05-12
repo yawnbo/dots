@@ -145,6 +145,8 @@ alias spt='spotify_player'
 alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
 alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioyek > /dev/null &'
 alias listlines="git ls-files --exclude-standard -- ':!:**/*.[pjs][npv]g' ':!:**/*.ai' ':!:.idea' ':!:**/*.eslintrc' ':!:package-lock.json' | xargs wc -l"
+alias paste="curl -F 'file=@-' 0x0.st"
+alias gnu="/opt/homebrew/bin/g++-14"
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 

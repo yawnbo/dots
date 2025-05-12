@@ -12,6 +12,5 @@ git restore .
 ```
 ### fix (still)  
 ---  
-get frac snippet to consume \\left and \\right  
-gruvbox.nvim instead of gruvbox.vim (will need manual configuration)  
+Maybe switch to typst instead of latex/word/markdown? Needs proper snippets and I don't know if they exist, but a vimtex replacement exists [here](https://github.com/niuiic/typst-preview.nvim)
 just actually do some work instead of this idk  
