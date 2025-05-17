@@ -120,6 +120,7 @@ source $ZSH/oh-my-zsh.sh
 if [[ "$(uname)" == "Darwin" ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
 	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
+	alias gnu="/opt/homebrew/bin/g++-14"
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin"
@@ -146,7 +147,7 @@ alias v='fd --type f --hidden --exclude .git | fzf-tmux -p | xargs nvim'
 alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioyek > /dev/null &'
 alias listlines="git ls-files --exclude-standard -- ':!:**/*.[pjs][npv]g' ':!:**/*.ai' ':!:.idea' ':!:**/*.eslintrc' ':!:package-lock.json' | xargs wc -l"
 alias paste="curl -F 'file=@-' 0x0.st"
-alias gnu="/opt/homebrew/bin/g++-14"
+alias nv="nvim"
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 
