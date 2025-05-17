@@ -10,15 +10,16 @@ def env(name):
 
 endglobal
 
-snippet newtemp "Skeleton template" b
+snippet temp "Skeleton template" b
 \documentclass{report}
 
-\input{../../../pkgs/preamble}
-\input{../../../pkgs/macros}
+%subject to pathing issues, remember to change
+\input{../../pkgs/preamble}
+\input{../../pkgs/macros}
 \input{../../../pkgs/letterfonts}
 
-\title{\Huge{${1:Calc3}}\\\\ ${2:Notes} }
-\author{\huge{yawnbo}}
+\title{\Huge{${1:Calc4}}\\\\ ${2:Notes} }
+\author{\huge{Yan Bogdanovskyy (yawnbo)}}
 \date{\today}
 
 \begin{document}
@@ -113,33 +114,6 @@ snippet psub "Subparagraph" b
 $0
 endsnippet 
 
-snippet ogtemplate "Basic template" b
-\documentclass[a4paper]{article}
-
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{textcomp}
-\usepackage[english]{babel}
-\usepackage{amsmath, amssymb}
-
-
-% figure support
-\usepackage{import}
-\usepackage{xifthen}
-\pdfminorversion=7
-\usepackage{pdfpages}
-\usepackage{transparent}
-\newcommand{\incfig}[1]{%
-	\def\svgwidth{\columnwidth}
-	\import{./figures/}{#1.pdf_tex}
-}
-
-\pdfsuppresswarningpagegroup=1
-
-\begin{document}
-	$0
-\end{document}
-endsnippet
 
 snippet beg "begin{} / end{}" b
 \\begin{$1}
@@ -653,15 +627,15 @@ snippet OO "emptyset" iA
 endsnippet
 
 snippet RR "real" iA
-\R
+\mathbb{R}
 endsnippet
 
 snippet QQ "Q" iA
-\Q
+\mathbb{Q}
 endsnippet
 
 snippet ZZ "Z" iA
-\Z
+\mathbb{Z}
 endsnippet
 
 snippet <! "normal" iA
