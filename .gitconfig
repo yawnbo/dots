@@ -28,6 +28,8 @@
 	email = ownuniverse@yahoo.com
 [pull]
 	rebase = false
+[push]
+	autoSetupRemote = true
 [core]
 	excludesfile = /Users/yawnbo/dots/.gitignore
 [init]

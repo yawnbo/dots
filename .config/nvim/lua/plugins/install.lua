@@ -645,6 +645,10 @@ require("lazy").setup({
 				lua = { "stylua" },
 				c = { "clang-format" },
 				javascript = { "clang-format" },
+				javascriptreact = { "clangd-format" },
+				typescript = { "prettier" },
+				typescriptreact = { "prettier" },
+
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				-- You can use 'stop_after_first' to run the first available formatter from the list
