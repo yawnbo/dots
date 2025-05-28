@@ -61,8 +61,8 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 vim.opt.cursorline = false
 vim.opt.scrolloff = 10
-vim.o.tabstop = 2
-vim.o.shiftwidth = 2
+vim.o.tabstop = 3
+vim.o.shiftwidth = 3
 
 -- theme stuff
 vim.g.gruvbox_contrast_dark = "soft"
