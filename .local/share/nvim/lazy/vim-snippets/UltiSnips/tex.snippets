@@ -25,13 +25,13 @@ snippet temp "Skeleton template" b
 \begin{document}
 
 \maketitle
-\begin{multicols}{2}
 \newpage% or \cleardoublepage
 % \pdfbookmark[<level>]{<title>}{<dest>}
 \pdfbookmark[section]{\contentsname}{toc}
 ${3:\tableofcontents}
 \pagebreak
 
+\begin{multicols}{2}
 \chapter{}
 $0
 \end{multicols}
@@ -49,6 +49,12 @@ endsnippet
 snippet qs "Question" b
 \qs{ ${1:Question} }{ ${2:} } $0
 endsnippet 
+
+snippet equ "Equation" b
+\begin{equation}
+$1
+.\end{equation}$0
+endsnippet
 
 snippet template "Customs template" b
 \documentclass[a4paper]{article}
