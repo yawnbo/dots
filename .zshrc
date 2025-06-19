@@ -123,7 +123,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	alias gnu="/opt/homebrew/bin/g++-14"
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
-	export PATH="$PATH:$HOME/.cargo/bin"
+	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
    #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
