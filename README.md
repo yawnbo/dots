@@ -1,5 +1,5 @@
 ## Dotfiles
-![macos screenshot](https://github.com/yawnbo/yawnbo/blob/main/media/dots/mac.png?raw=true)
+![macos screenshot](https://github.com/yawnbo/yawnbo/blob/main/media/dots/mac2.png?raw=true)
 Clone repo
 ``` bash
 git clone https://github.com/yawnbo/dots.git ~/
