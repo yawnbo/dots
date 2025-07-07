@@ -21,3 +21,13 @@ AlwaysBreakTemplateDeclarations: true
 BreakConstructorInitializers: BeforeComma
 IndentPPDirectives: AfterHash
 PointerAlignment: Left
+---
+Language: TypeScript
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 80
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+SpacesBeforeTrailingComments: 1
+BreakBeforeBraces: Allman
