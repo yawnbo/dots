@@ -10,6 +10,8 @@ require("lazy").setup({
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	{ "morhetz/gruvbox", lazy = true },
 	{ "navarasu/onedark.nvim", priority = 1000 },
+	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+	{ "vague2k/vague.nvim" },
 	{
 		"eddyekofo94/gruvbox-flat.nvim",
 		priority = 1000,
@@ -216,15 +218,9 @@ require("lazy").setup({
 	},
 	{
 		"lewis6991/gitsigns.nvim",
-		opts = {
-			signs = {
-				add = { text = "+" },
-				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
-			},
-		},
+		config = function()
+			require("gitsigns").setup()
+		end,
 	},
 	{ -- Highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
@@ -804,7 +800,6 @@ require("lazy").setup({
 	},
 	install = { colorscheme = { "gruvbox" } },
 	checker = { enabled = true },
-	-- DEFAULTS --
 })
 
 require("plugins.setups")
