@@ -1,5 +1,4 @@
 "$schema" = 'https://starship.rs/config-schema.json'
-
 format = """
 [](surface0)\
 $os\
@@ -66,7 +65,8 @@ Ubuntu = "󰕈"
 SUSE = ""
 Raspbian = "󰐿"
 Mint = "󰣭"
-Macos = ""
+# 
+Macos = "󰌽"
 Manjaro = ""
 Linux = "󰌽"
 Gentoo = "󰣨"
