@@ -9,10 +9,7 @@ $directory\
 [](fg:peach bg:green)\
 $git_branch\
 $git_status\
-[](fg:green bg:teal)\
-[](fg:teal bg:blue)\
-$docker_context\
-[](fg:blue bg:purple)\
+[](fg:green bg:purple)\
 $time\
 [ ](fg:purple)\
 $line_break$character"""
@@ -93,8 +90,7 @@ format = '[ $user ]($style)'
 [directory]
 style = "fg:mantle bg:peach"
 format = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
+truncation_length = 9
 
 [directory.substitutions]
 "Documents" = "󰈙 "

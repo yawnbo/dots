@@ -1,9 +1,12 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
+# p10k again
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -19,7 +22,7 @@ export EDITOR=nvim
 #ZSH_THEME="agnoster"
 
 #alt p10k
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -115,12 +118,13 @@ source $ZSH/oh-my-zsh.sh
 #source ~/src/themes/comfyline.zsh-theme
 #source ~/src/themes/heap.zsh-theme
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 if [[ "$(uname)" == "Darwin" ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
 	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
 	alias gnu="/opt/homebrew/bin/g++-14"
+	# curl stuff
+	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
@@ -140,6 +144,7 @@ function y() {
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 alias skeleton='cp ~/textemp/letterfonts.tex ~/textemp/macros.tex ~/textemp/preamble.tex'
 
+alias ls='eza'
 alias lg='lazygit'
 alias t='tmux'
 alias spt='spotify_player'
@@ -151,6 +156,6 @@ alias nv="nvim"
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 
-# eval "$(starship init zsh)"
+eval "$(starship init zsh)"
 #export PATH=$PATH:/home/yawnbo/.spicetify
 

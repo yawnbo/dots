@@ -38,8 +38,8 @@ set timeoutlen=300
 set list
 set listchars=tab:»\ ,trail:·,nbsp:␣
 set scrolloff=10
-set tabstop=3
-set shiftwidth=3
+set tabstop=2
+set shiftwidth=2
 
 " Theme settings
 let g:gruvbox_contrast_dark = "soft"
