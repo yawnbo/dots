@@ -157,5 +157,21 @@ alias nv="nvim"
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 
 eval "$(starship init zsh)"
+
+# launch tmux in kitty
+if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
+  SESSION="main"
+  CWD="$PWD"
+
+  # If the session exists, attach and create a new window in the current directory
+  if tmux has-session -t "$SESSION" 2>/dev/null; then
+    tmux attach-session -t "$SESSION" \; new-window -c "$CWD"
+  else
+    # Otherwise, create a new session named "main" in the current directory
+    tmux new-session -s "$SESSION" -c "$CWD"
+  fi
+
+  exit
+fi
 #export PATH=$PATH:/home/yawnbo/.spicetify
 
