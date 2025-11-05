@@ -21,6 +21,8 @@ vim.o.wildmenu = true
 vim.opt.showbreak = "↳"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
+
+-- i don't remember where i got this list but i think its been working
 vim.opt.wildignore:append({ ".javac", "node_modules", "*.pyc" })
 vim.opt.wildignore:append({ ".aux", ".out", ".toc" })
 vim.opt.wildignore:append({
@@ -49,7 +51,6 @@ vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
---relative nums
 vim.opt.relativenumber = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
@@ -59,30 +60,37 @@ vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
+-- this one is nice but makes me lag very badly on large latex files for some reason
 vim.opt.cursorline = false
 vim.opt.scrolloff = 10
+
+-- these are important (i feel like there is a third one that im forgetting)
 vim.o.tabstop = 2
 vim.o.shiftwidth = 2
 
--- theme stuff
+-- gruvbox theme stuff
 vim.g.gruvbox_contrast_dark = "soft"
 vim.g.gruvbox_invert_selection = 0
--- latex dont know if needed or not
+
+-- latex dont know if needed or not - i still have no idea however many months later
 vim.cmd("filetype plugin on")
 vim.g.UltiSnippetDirectories = "$HOME/.config/nvim/ultisnips"
+
 -- keybinds for buffers
 vim.api.nvim_set_keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>b", ":buffers<CR>:b ", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<leader>bd", ":bd<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>dd", ":bd<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>bo", ":tabonly<CR>", { noremap = true, silent = true })
 
 vim.g.airline_powerline_fonts = 1
 
 --clear highlight on search in norm
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
 --term mode exits
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
 --window focusing with hjkl
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
@@ -94,8 +102,7 @@ vim.keymap.set("n", "<leader>o", "<cmd>NvimTreeToggle<CR>", {
 	silent = true,
 })
 
---vim.keymap.set("n", "leader-t",
---highlight yanks
+--highlight yanks (amazing feature from kickstart)
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
 	callback = function()
@@ -108,8 +115,8 @@ vim.schedule(function()
 	vim.opt.clipboard = "unnamedplus"
 end)
 
+-- stuff to autowrite tex files on insertion leave
 vim.api.nvim_create_augroup("AutoSaveTex", { clear = true })
-
 vim.api.nvim_create_autocmd("InsertLeave", {
 	group = "AutoSaveTex",
 	pattern = "*.tex",
