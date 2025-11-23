@@ -158,6 +158,12 @@ alias nv="nvim"
 
 eval "$(starship init zsh)"
 
+if [ -n "$SSH_CONNECTION" ]; then
+  export TMUX_CONF="$HOME/.tmux.conf.remote"
+else
+  export TMUX_CONF="$HOME/.tmux.conf.local"
+fi
+
 # launch tmux in kitty
 if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
   SESSION="main"
