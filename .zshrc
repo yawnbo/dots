@@ -123,15 +123,16 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
 	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
 	alias gnu="/opt/homebrew/bin/g++-14"
+	alias lastpad="yabai -m config --space $(yabai -m query --spaces | jq '.[-1].index') top_padding 56"
 	# curl stuff
 	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+	alias z='/opt/homebrew/bin/zoxide'
 elif [[ "$(uname)" == "Linux" ]]; then
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
    #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
-# custom env variables
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -153,10 +154,13 @@ alias sio='fd --type f -e pdf --hidden --exclude .git | fzf-tmux -p | xargs sioy
 alias listlines="git ls-files --exclude-standard -- ':!:**/*.[pjs][npv]g' ':!:**/*.ai' ':!:.idea' ':!:**/*.eslintrc' ':!:package-lock.json' | xargs wc -l"
 alias paste="curl -F 'file=@-' 0x0.st"
 alias nv="nvim"
+alias fixme='find . -type f -exec sed -i "" "s/\/\/ FIXME:/\/\/ TODO:/g" {} +'
+
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
 
 if [ -n "$SSH_CONNECTION" ]; then
   export TMUX_CONF="$HOME/.tmux.conf.remote"
@@ -179,5 +183,4 @@ if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
 
   exit
 fi
-#export PATH=$PATH:/home/yawnbo/.spicetify
 
