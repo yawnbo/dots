@@ -69,6 +69,7 @@ install_packages() {
                 curl \
                 wget \
                 zsh \
+                stow \
                 neovim \
                 tmux \
                 ripgrep \
@@ -124,6 +125,7 @@ install_packages() {
                 curl \
                 wget \
                 zsh \
+                stow \
                 tmux \
                 ripgrep \
                 fd-find \
@@ -203,6 +205,7 @@ install_packages() {
                 curl \
                 wget \
                 zsh \
+                stow \
                 neovim \
                 tmux \
                 ripgrep \
@@ -274,6 +277,7 @@ install_packages() {
                 curl \
                 wget \
                 zsh \
+                stow \
                 neovim \
                 tmux \
                 ripgrep \
@@ -379,50 +383,29 @@ install_tpm() {
 }
 
 setup_dotfiles() {
-    print_info "Setting up dotfiles..."
+    print_info "Setting up dotfiles with GNU Stow..."
 
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-    backup_if_exists() {
-        if [[ -e "$1" ]] && [[ ! -L "$1" ]]; then
-            print_warning "Backing up existing $1 to $1.backup"
-            mv "$1" "$1.backup"
-        fi
-    }
-
-    mkdir -p "$HOME/.config"
-
-    backup_if_exists "$HOME/.zshrc"
-    ln -sf "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
-    print_success "Linked .zshrc"
-
-    backup_if_exists "$HOME/.tmux.conf"
-    ln -sf "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
-    print_success "Linked .tmux.conf"
-
-    backup_if_exists "$HOME/.config/nvim"
-    ln -sf "$SCRIPT_DIR/.config/nvim" "$HOME/.config/nvim"
-    print_success "Linked nvim config"
-
-    if [[ -d "$SCRIPT_DIR/.config/kitty" ]]; then
-        backup_if_exists "$HOME/.config/kitty"
-        ln -sf "$SCRIPT_DIR/.config/kitty" "$HOME/.config/kitty"
-        print_success "Linked kitty config"
+    # Check if stow is installed
+    if ! command -v stow &> /dev/null; then
+        print_error "GNU Stow is not installed. Please install it first."
+        exit 1
     fi
 
-    if [[ -d "$SCRIPT_DIR/.config/starship.toml" ]]; then
-        backup_if_exists "$HOME/.config/starship.toml"
-        ln -sf "$SCRIPT_DIR/.config/starship.toml" "$HOME/.config/starship.toml"
-        print_success "Linked starship config"
-    fi
+    # Change to the dotfiles directory
+    cd "$SCRIPT_DIR" || exit 1
 
-    if [[ -d "$SCRIPT_DIR/.config/yazi" ]]; then
-        backup_if_exists "$HOME/.config/yazi"
-        ln -sf "$SCRIPT_DIR/.config/yazi" "$HOME/.config/yazi"
-        print_success "Linked yazi config"
-    fi
+    # Use stow to create symlinks
+    # --adopt will move existing files into the stow directory
+    # git restore will then restore the original dotfiles versions
+    print_info "Running: stow --adopt ."
+    stow --adopt .
 
-    print_success "Dotfiles linked successfully"
+    print_info "Restoring original dotfiles from git..."
+    git restore .
+
+    print_success "Dotfiles stowed successfully"
 }
 
 setup_nvim() {
