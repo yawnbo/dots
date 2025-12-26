@@ -209,13 +209,15 @@ require("lazy").setup({
 			},
 		},
 	},
-	{ "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
-	{
-		"zbirenbaum/copilot-cmp",
-		config = function()
-			require("copilot_cmp").setup()
-		end,
-	},
+	-- lowkey hate copilot and i hit limits with completion even though i literally only used it like twice
+	-- the suggestions just ate everything like whatever bro
+	-- { "zbirenbaum/copilot.lua", cmd = "Copilot", event = "InsertEnter", lazy = true },
+	-- {
+	-- 	"zbirenbaum/copilot-cmp",
+	-- 	config = function()
+	-- 		require("copilot_cmp").setup()
+	-- 	end,
+	-- },
 	{
 		"lewis6991/gitsigns.nvim",
 		config = function()
