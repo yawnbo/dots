@@ -25,7 +25,7 @@
     line-numbers-zero-style = "#5a524c"
 [user]
 	name = yawnbo
-	email = ownuniverse@yahoo.com
+	email = main@yawnbo.xyz
 [pull]
 	rebase = false
 [push]
@@ -34,3 +34,9 @@
 	excludesfile = /Users/yawnbo/dots/.gitignore
 [init]
 	defaultBranch = master
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential

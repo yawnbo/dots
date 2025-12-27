@@ -164,6 +164,7 @@ eval "$(zoxide init zsh)"
 
 if [ -n "$SSH_CONNECTION" ]; then
   export TMUX_CONF="$HOME/.tmux.conf.remote"
+	tmux attach
 else
   export TMUX_CONF="$HOME/.tmux.conf.local"
 fi
