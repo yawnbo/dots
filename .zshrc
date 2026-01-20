@@ -174,14 +174,14 @@ if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
   SESSION="main"
   CWD="$PWD"
 
-  # If the session exists, attach and create a new window in the current directory
   if tmux has-session -t "$SESSION" 2>/dev/null; then
-    tmux attach-session -t "$SESSION" \; new-window -c "$CWD"
+		SHORT_ID=$(mktemp -u XXX)
+		UNIQUE_ID="main-$SHORT_ID"
+    tmux new-session -t "$SESSION" -s "$UNIQUE_ID" -c "$CWD" -d
+    tmux attach-session -t "$UNIQUE_ID" \; new-window -c "$CWD"
   else
-    # Otherwise, create a new session named "main" in the current directory
     tmux new-session -s "$SESSION" -c "$CWD"
   fi
 
   exit
 fi
-
