@@ -159,9 +159,6 @@ alias fixme='find . -type f -exec sed -i "" "s/\/\/ FIXME:/\/\/ TODO:/g" {} +'
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
 
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-
 if [ -n "$SSH_CONNECTION" ]; then
   export TMUX_CONF="$HOME/.tmux.conf.remote"
 	tmux attach
@@ -170,18 +167,21 @@ else
 fi
 
 # launch tmux in kitty
-if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
-  SESSION="main"
-  CWD="$PWD"
-
-  if tmux has-session -t "$SESSION" 2>/dev/null; then
-		SHORT_ID=$(mktemp -u XXX)
-		UNIQUE_ID="main-$SHORT_ID"
-    tmux new-session -t "$SESSION" -s "$UNIQUE_ID" -c "$CWD" -d
-    tmux attach-session -t "$UNIQUE_ID" \; new-window -c "$CWD"
-  else
-    tmux new-session -s "$SESSION" -c "$CWD"
-  fi
-
-  exit
+TMUX_PARENT_SESSION="main"
+if [ "$TERM" = "xterm-kitty" ]; then
+    if tmux has-session -t "$TMUX_PARENT_SESSION" 2>/dev/null; then
+        if [ -n "$(tmux list-clients -t "$TMUX_PARENT_SESSION")" ]; then
+            CWD=$PWD
+            SHORT_ID=$(mktemp -u XXX)
+            UNIQUE_ID="main-$SHORT_ID"
+            NEW_WINDOW=$(tmux new-window -d -t "$TMUX_PARENT_SESSION" -c "$CWD" -P -F '#{window_id}')
+						exec tmux new-session -t "$TMUX_PARENT_SESSION" -s "$UNIQUE_ID" \; set destroy-unattached on \; select-window -t "$NEW_WINDOW"
+        else
+            exec tmux attach-session -t "$TMUX_PARENT_SESSION"
+        fi
+    else
+        exec tmux new-session -s "$TMUX_PARENT_SESSION"
+    fi
 fi
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
