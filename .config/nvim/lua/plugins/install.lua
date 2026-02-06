@@ -82,6 +82,11 @@ require("lazy").setup({
 	{ "honza/vim-snippets" },
 
 	-- normal plugs
+	-- {
+	-- 	"mrcjkb/rustaceanvim",
+	-- 	version = "^6", -- Recommended
+	-- 	lazy = false, -- This plugin is already lazy
+	-- },
 	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
 	{
 		"nvim-tree/nvim-tree.lua",
@@ -467,7 +472,7 @@ require("lazy").setup({
 				callback = function(event)
 					-- NOTE: Remember that Lua is a real programming language, and as such it is possible
 					-- to define small helper and utility functions so you don't have to repeat yourself.
-					--
+
 					local map = function(keys, func, desc, mode)
 						mode = mode or "n"
 						vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
@@ -577,7 +582,24 @@ require("lazy").setup({
 				},
 				gopls = {},
 				pyright = {},
-				rust_analyzer = {},
+				rust_analyzer = {
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								allTargets = true,
+								-- Or to explicitly check wasm32:
+								-- target = "wasm32-unknown-unknown",
+							},
+							procMacro = {
+								enable = true,
+							},
+							checkOnSave = {
+								command = "clippy",
+								allTargets = true,
+							},
+						},
+					},
+				},
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
 				--    https://github.com/pmizio/typescript-tools.nvim
@@ -620,7 +642,8 @@ require("lazy").setup({
 						-- by the server configuration above. Useful when disabling
 						-- certain features of an LSP (for example, turning off formatting for tsserver)
 						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
+						vim.lsp.config(server_name, server)
+						vim.lsp.enable(server_name)
 					end,
 				},
 			})
