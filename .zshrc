@@ -183,5 +183,13 @@ if [ "$TERM" = "xterm-kitty" ]; then
         exec tmux new-session -s "$TMUX_PARENT_SESSION"
     fi
 fi
+
+[[ -f ~/.secrets.sh ]] && source ~/.secrets.sh
+
+deploy() {
+  local project="${PWD##*/}"
+	rsync -avz --exclude target/ --exclude .git/ --exclude '*.db' --exclude '*.db-wal' --exclude '*.db-shm' ./ "${DEPLOY_HOST}":~/"$project"/
+}
+
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"

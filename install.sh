@@ -148,7 +148,7 @@ install_packages() {
                 cargo \
                 rustc \
                 default-jdk \
-                software-properties-common
+                # software-properties-common
 
             if [[ "$OS" == "ubuntu" ]]; then
                 sudo add-apt-repository -y ppa:neovim-ppa/unstable
