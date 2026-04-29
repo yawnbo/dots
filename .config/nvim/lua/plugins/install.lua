@@ -7,8 +7,24 @@ end
 
 local function apply_zenbones_variant(variant)
 	local set_hl = vim.api.nvim_set_hl
+	local base_bg = "#1c1917"
 
 	local function apply(groups)
+		groups.Normal = vim.tbl_extend("force", groups.Normal or {}, { bg = base_bg })
+		groups.NormalNC = vim.tbl_extend("force", groups.NormalNC or {}, { bg = base_bg })
+		groups.NormalFloat = vim.tbl_extend("force", groups.NormalFloat or {}, { bg = base_bg })
+		groups.FloatBorder = vim.tbl_extend("force", groups.FloatBorder or {}, { bg = base_bg })
+		groups.SignColumn = vim.tbl_extend("force", groups.SignColumn or {}, { bg = base_bg })
+		groups.EndOfBuffer = vim.tbl_extend("force", groups.EndOfBuffer or {}, { bg = base_bg })
+		groups.LineNr = vim.tbl_extend("force", groups.LineNr or {}, { bg = base_bg })
+		groups.CursorLineNr = vim.tbl_extend("force", groups.CursorLineNr or {}, { bg = base_bg })
+		groups.NvimTreeNormal = vim.tbl_extend("force", groups.NvimTreeNormal or {}, { bg = base_bg })
+		groups.NvimTreeNormalNC = vim.tbl_extend("force", groups.NvimTreeNormalNC or {}, { bg = base_bg })
+		groups.NvimTreeEndOfBuffer = vim.tbl_extend("force", groups.NvimTreeEndOfBuffer or {}, { bg = base_bg })
+		groups.NvimTreeWinSeparator = vim.tbl_extend("force", groups.NvimTreeWinSeparator or {}, { bg = base_bg })
+		groups.NvimTreeVertSplit = vim.tbl_extend("force", groups.NvimTreeVertSplit or {}, { bg = base_bg })
+		groups.NvimTreeCursorLine = vim.tbl_extend("force", groups.NvimTreeCursorLine or {}, { bg = base_bg })
+
 		for group, opts in pairs(groups) do
 			set_hl(0, group, opts)
 		end
