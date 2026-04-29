@@ -145,6 +145,7 @@ function y() {
 alias pdfclear='find $HOME/pdfout -type f ! -name "*.pdf" -exec rm -f {} +'
 alias skeleton='cp ~/textemp/letterfonts.tex ~/textemp/macros.tex ~/textemp/preamble.tex'
 
+alias kittyplain='KITTY_NO_TMUX=1 kitty'
 alias ls='eza'
 alias lg='lazygit'
 alias t='tmux'
@@ -168,7 +169,7 @@ fi
 
 # launch tmux in kitty
 TMUX_PARENT_SESSION="main"
-if [ "$TERM" = "xterm-kitty" ]; then
+if [ "$TERM" = "xterm-kitty" ] && [ -z "$KITTY_NO_TMUX" ]; then
     if tmux has-session -t "$TMUX_PARENT_SESSION" 2>/dev/null; then
         if [ -n "$(tmux list-clients -t "$TMUX_PARENT_SESSION")" ]; then
             CWD=$PWD

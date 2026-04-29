@@ -1,7 +1,204 @@
+local random_variants = { "auburn", "mauve", "cinder", "slate", "ochre", "tealrose", "ansi", "ansi_tty" }
+
+local function pick_random_variant()
+	math.randomseed(vim.uv.hrtime())
+	return random_variants[math.random(#random_variants)]
+end
+
+local function apply_zenbones_variant(variant)
+	local set_hl = vim.api.nvim_set_hl
+
+	local function apply(groups)
+		for group, opts in pairs(groups) do
+			set_hl(0, group, opts)
+		end
+	end
+
+	local variants = {
+		default = function()
+			return
+		end,
+		auburn = function()
+			apply({
+				Comment = { fg = "#7a756f", italic = true },
+				Conditional = { fg = "#c18273", italic = true },
+				Constant = { fg = "#d3a06f" },
+				DiagnosticHint = { fg = "#80a7a3" },
+				DiagnosticInfo = { fg = "#8b9385" },
+				DiagnosticWarn = { fg = "#d3a16f" },
+				Function = { fg = "#b89072" },
+				Identifier = { fg = "#bbb2a4" },
+				Keyword = { fg = "#c18273", italic = true },
+				Operator = { fg = "#958877" },
+				PreProc = { fg = "#cf8f7a" },
+				Special = { fg = "#c9856b" },
+				Statement = { fg = "#c18273", italic = true },
+				String = { fg = "#d0aa79", italic = true },
+				Type = { fg = "#80a7a3" },
+			})
+		end,
+		mauve = function()
+			apply({
+				Comment = { fg = "#7d7880", italic = true },
+				Conditional = { fg = "#b27f9e", italic = true },
+				Constant = { fg = "#d39a7f" },
+				DiagnosticHint = { fg = "#7ea6a7" },
+				DiagnosticInfo = { fg = "#8e938c" },
+				DiagnosticWarn = { fg = "#d1a27a" },
+				Function = { fg = "#ad8d89" },
+				Identifier = { fg = "#beb5be" },
+				Keyword = { fg = "#b27f9e", italic = true },
+				Operator = { fg = "#938993" },
+				PreProc = { fg = "#c98a93" },
+				Special = { fg = "#bc8692" },
+				Statement = { fg = "#b27f9e", italic = true },
+				String = { fg = "#c4a08b", italic = true },
+				Type = { fg = "#7ea6a7" },
+			})
+		end,
+		cinder = function()
+			apply({
+				Comment = { fg = "#787678", italic = true },
+				Conditional = { fg = "#ac8078", italic = true },
+				Constant = { fg = "#c99c7b" },
+				DiagnosticHint = { fg = "#7b9fa0" },
+				DiagnosticInfo = { fg = "#8b9188" },
+				DiagnosticWarn = { fg = "#caa178" },
+				Function = { fg = "#9a9385" },
+				Identifier = { fg = "#b7b4b3" },
+				Keyword = { fg = "#ac8078", italic = true },
+				Operator = { fg = "#8e8884" },
+				PreProc = { fg = "#be877d" },
+				Special = { fg = "#a69189" },
+				Statement = { fg = "#ac8078", italic = true },
+				String = { fg = "#b79f86", italic = true },
+				Type = { fg = "#7b9fa0" },
+			})
+		end,
+		slate = function()
+			apply({
+				Comment = { fg = "#747a7d", italic = true },
+				Conditional = { fg = "#9c88ae", italic = true },
+				Constant = { fg = "#c3a089" },
+				DiagnosticHint = { fg = "#7ba1aa" },
+				DiagnosticInfo = { fg = "#879192" },
+				DiagnosticWarn = { fg = "#c9a67d" },
+				Function = { fg = "#8ca0a4" },
+				Identifier = { fg = "#b4bcc0" },
+				Keyword = { fg = "#9c88ae", italic = true },
+				Operator = { fg = "#87a0a0" },
+				PreProc = { fg = "#ab8fa8" },
+				Special = { fg = "#7ea4ad" },
+				Statement = { fg = "#9c88ae", italic = true },
+				String = { fg = "#b59e90", italic = true },
+				Type = { fg = "#7ba1aa" },
+			})
+		end,
+		ochre = function()
+			apply({
+				Comment = { fg = "#7b7468", italic = true },
+				Conditional = { fg = "#a27fb0", italic = true },
+				Constant = { fg = "#d5a18d" },
+				DiagnosticHint = { fg = "#8a9fb6" },
+				DiagnosticInfo = { fg = "#8b9485" },
+				DiagnosticWarn = { fg = "#d2a08a" },
+				Function = { fg = "#b18ba7" },
+				Identifier = { fg = "#bbb19e" },
+				Keyword = { fg = "#a27fb0", italic = true },
+				Operator = { fg = "#96846e" },
+				PreProc = { fg = "#c88ea0" },
+				Special = { fg = "#d49a8d" },
+				Statement = { fg = "#a27fb0", italic = true },
+				String = { fg = "#caa2b4", italic = true },
+				Type = { fg = "#8a9fb6" },
+			})
+		end,
+		tealrose = function()
+			apply({
+				Comment = { fg = "#77787a", italic = true },
+				Conditional = { fg = "#ba7783", italic = true },
+				Constant = { fg = "#d39a7e" },
+				DiagnosticHint = { fg = "#73aaa5" },
+				DiagnosticInfo = { fg = "#88928d" },
+				DiagnosticWarn = { fg = "#cfa27a" },
+				Function = { fg = "#77aaa3" },
+				Identifier = { fg = "#b8b7b7" },
+				Keyword = { fg = "#ba7783", italic = true },
+				Operator = { fg = "#879290" },
+				PreProc = { fg = "#cb8787" },
+				Special = { fg = "#8d99a7" },
+				Statement = { fg = "#ba7783", italic = true },
+				String = { fg = "#9db4ae", italic = true },
+				Type = { fg = "#73aaa5" },
+			})
+		end,
+		ansi = function()
+			apply({
+				Comment = { fg = "#7b7468", italic = true },
+				Conditional = { fg = "#cc7a6a", italic = true },
+				Constant = { fg = "#d89a52" },
+				DiagnosticHint = { fg = "#63a6a3" },
+				DiagnosticInfo = { fg = "#7b9c8d" },
+				DiagnosticWarn = { fg = "#d5a04f" },
+				Function = { fg = "#6aa39d" },
+				Identifier = { fg = "#c1b7a3" },
+				Keyword = { fg = "#cc7a6a", italic = true },
+				Operator = { fg = "#9b8b6f" },
+				PreProc = { fg = "#d48764" },
+				Special = { fg = "#6b8fb0" },
+				Statement = { fg = "#cc7a6a", italic = true },
+				String = { fg = "#d0b06b", italic = true },
+				Type = { fg = "#63a6a3" },
+			})
+		end,
+		ansi_tty = function()
+			apply({
+				Comment = { fg = "#6f6a60", italic = true },
+				Conditional = { fg = "#d75f5f", italic = true },
+				Constant = { fg = "#d7875f" },
+				DiagnosticHint = { fg = "#5fafd7" },
+				DiagnosticInfo = { fg = "#87af87" },
+				DiagnosticWarn = { fg = "#d7af5f" },
+				Function = { fg = "#87afaf" },
+				Identifier = { fg = "#c2b8a3" },
+				Keyword = { fg = "#d75f5f", italic = true },
+				Operator = { fg = "#a08b68" },
+				PreProc = { fg = "#ff875f" },
+				Special = { fg = "#5f87af" },
+				Statement = { fg = "#d75f5f", italic = true },
+				String = { fg = "#afaf5f", italic = true },
+				Type = { fg = "#5fafd7" },
+			})
+		end,
+		wayprompt = function()
+			apply({
+				Comment = { fg = "#928374", italic = true },
+				Conditional = { fg = "#b16286", italic = true },
+				Constant = { fg = "#fab387" },
+				DiagnosticHint = { fg = "#83a598" },
+				DiagnosticInfo = { fg = "#8ec07c" },
+				DiagnosticWarn = { fg = "#fabd2f" },
+				Function = { fg = "#689d6a" },
+				Identifier = { fg = "#ebdbb2" },
+				Keyword = { fg = "#d3869b", italic = true },
+				Operator = { fg = "#a89984" },
+				PreProc = { fg = "#e06c75" },
+				Special = { fg = "#458588" },
+				Statement = { fg = "#d3869b", italic = true },
+				String = { fg = "#d5a88a", italic = true },
+				Type = { fg = "#83a598" },
+			})
+		end,
+	}
+
+	(variants[variant] or variants.default)()
+end
+
 require("lazy").setup({
 	-- theme
 	{
 		"eddyekofo94/gruvbox-flat.nvim",
+		enabled = false,
 		lazy = false,
 		priority = 1000,
 		config = function()
@@ -9,6 +206,74 @@ require("lazy").setup({
 		end,
 	},
 
+	-- {
+	-- 	"bluz71/vim-moonfly-colors",
+	-- 	lazy = false,
+	-- 	priority = 1000,
+	-- 	config = function()
+	-- 		vim.cmd([[colorscheme moonfly]])
+	-- 	end,
+	-- },
+
+	-- {
+	-- 	"https://github.com/vague-theme/vague.nvim",
+	-- 	lazy = false,
+	-- 	priority = 1000,
+	-- 	config = function()
+	-- 		vim.cmd([[colorscheme vague]])
+	-- 	end,
+	-- },
+	{
+		"zenbones-theme/zenbones.nvim",
+		-- Optionally install Lush. Allows for more configuration or extending the colorscheme
+		-- If you don't want to install lush, make sure to set g:zenbones_compat = 1
+		-- In Vim, compat mode is turned on as Lush only works in Neovim.
+		dependencies = "rktjmp/lush.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			-- vim.g.zenbones_variant = "tealrose"
+			vim.g.zenbones_variant = vim.g.zenbones_variant or pick_random_variant()
+			vim.g.zenbones_solid_line_nr = true
+
+			local group = vim.api.nvim_create_augroup("zenbones-variants", { clear = true })
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				group = group,
+				pattern = "zenbones",
+				callback = function()
+					apply_zenbones_variant(vim.g.zenbones_variant)
+				end,
+			})
+
+			vim.api.nvim_create_user_command("ZenbonesVariant", function(args)
+				vim.g.zenbones_variant = args.args
+				vim.cmd.colorscheme("zenbones")
+			end, {
+				nargs = 1,
+				complete = function()
+					return {
+						"default",
+						"auburn",
+						"mauve",
+						"cinder",
+						"slate",
+						"ochre",
+						"tealrose",
+						"ansi",
+						"ansi_tty",
+						"wayprompt",
+					}
+				end,
+			})
+
+			vim.api.nvim_create_user_command("ZenbonesVariantRandom", function()
+				vim.g.zenbones_variant = pick_random_variant()
+				vim.cmd.colorscheme("zenbones")
+			end, {})
+
+			vim.cmd.colorscheme("zenbones")
+		end,
+	},
 	-- git
 	{
 		"kdheepak/lazygit.nvim",
@@ -582,6 +847,6 @@ require("lazy").setup({
 		opts = { signs = false },
 	},
 
-	install = { colorscheme = { "gruvbox-flat" } },
+	install = { colorscheme = { "zenbones", "gruvbox-flat" } },
 	checker = { enabled = true },
 })

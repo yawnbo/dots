@@ -1,0 +1,4 @@
+nohup: ignoring input
+
+(waybar:27477): Gtk-WARNING **: 20:49:38.192: Theme parsing error: style.css:58:12: The 'icon-shadow' property has been renamed to '-gtk-icon-shadow'
+Gdk-Message: 00:20:57.119: Error reading events from display: Connection reset by peer
