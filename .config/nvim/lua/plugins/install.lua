@@ -24,6 +24,12 @@ local function apply_zenbones_variant(variant)
 		groups.NvimTreeWinSeparator = vim.tbl_extend("force", groups.NvimTreeWinSeparator or {}, { bg = base_bg })
 		groups.NvimTreeVertSplit = vim.tbl_extend("force", groups.NvimTreeVertSplit or {}, { bg = base_bg })
 		groups.NvimTreeCursorLine = vim.tbl_extend("force", groups.NvimTreeCursorLine or {}, { bg = base_bg })
+		groups.LspInlayHint =
+			vim.tbl_extend("force", groups.LspInlayHint or {}, { fg = "#7a756f", bg = base_bg, italic = true })
+		groups.CmpGhostText =
+			vim.tbl_extend("force", groups.CmpGhostText or {}, { fg = "#7a756f", bg = base_bg, italic = true })
+		groups.CmpDocumentation =
+			vim.tbl_extend("force", groups.CmpDocumentation or {}, { fg = "#c1b7a3", bg = "#24201d" })
 
 		for group, opts in pairs(groups) do
 			set_hl(0, group, opts)
