@@ -42,11 +42,36 @@ vim.o.tabstop = 2
 vim.o.shiftwidth = 2
 
 -- keybinds for buffers
-vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>b", ":buffers<CR>:b ", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>dd", ":bd<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>bo", ":tabonly<CR>", { noremap = true, silent = true })
+local function delete_buffer(buf, opts)
+	opts = opts or {}
+	buf = buf or vim.api.nvim_get_current_buf()
+	local ok, snacks = pcall(require, "snacks")
+	if ok and snacks.bufdelete then
+		snacks.bufdelete(buf, opts)
+	else
+		vim.cmd((opts.force and "bdelete!" or "bdelete") .. " " .. buf)
+	end
+end
+
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>dd", function()
+	delete_buffer()
+end, { desc = "Delete buffer" })
+vim.keymap.set("n", "<leader>bD", function()
+	delete_buffer(nil, { force = true })
+end, { desc = "Force delete buffer" })
+vim.keymap.set("n", "<leader>bo", function()
+	local visible = {}
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		visible[vim.api.nvim_win_get_buf(win)] = true
+	end
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_loaded(buf) and not visible[buf] then
+			delete_buffer(buf)
+		end
+	end
+end, { desc = "Delete hidden buffers" })
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

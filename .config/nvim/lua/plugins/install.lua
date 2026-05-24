@@ -247,14 +247,10 @@ require("lazy").setup({
 	-- },
 	{
 		"zenbones-theme/zenbones.nvim",
-		-- Optionally install Lush. Allows for more configuration or extending the colorscheme
-		-- If you don't want to install lush, make sure to set g:zenbones_compat = 1
-		-- In Vim, compat mode is turned on as Lush only works in Neovim.
 		dependencies = "rktjmp/lush.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			-- vim.g.zenbones_variant = "tealrose"
 			vim.g.zenbones_variant = vim.g.zenbones_variant or pick_random_variant()
 			vim.g.zenbones_solid_line_nr = true
 
@@ -305,6 +301,64 @@ require("lazy").setup({
 		keys = {
 			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 		},
+	},
+	-- if i want to one day, i don't really use this though, tmux kinda solves the issue
+	-- {
+	-- 	"mfussenegger/nvim-dap",
+	-- 	lazy = true,
+	-- },
+	{
+		"mrcjkb/rustaceanvim",
+		version = "^6",
+		lazy = false,
+		init = function()
+			vim.g.rustaceanvim = {
+				server = {
+					default_settings = {
+						["rust-analyzer"] = {
+							cargo = { allTargets = true },
+							procMacro = { enable = true },
+							check = { command = "clippy", allTargets = true },
+							checkOnSave = true,
+						},
+					},
+				},
+			}
+
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("rust-keymaps", { clear = true }),
+				pattern = "rust",
+				callback = function(event)
+					local map = function(keys, command, desc, opts)
+						opts = vim.tbl_extend("force", { buffer = event.buf, desc = "Rust: " .. desc }, opts or {})
+						vim.keymap.set("n", keys, command, opts)
+					end
+
+					map("<leader>rr", function()
+						vim.cmd.RustLsp("runnables")
+					end, "Runnables")
+					map("<leader>rt", function()
+						vim.cmd.RustLsp("testables")
+					end, "Testables")
+					map("<leader>re", function()
+						vim.cmd.RustLsp("expandMacro")
+					end, "Expand macro")
+					map("<leader>rh", "<Plug>RustHoverAction", "Hover actions", { remap = true })
+					map("<leader>rj", function()
+						vim.cmd.RustLsp("joinLines")
+					end, "Join lines")
+					map("<leader>rm", function()
+						vim.cmd.RustLsp("parentModule")
+					end, "Parent module")
+					map("<leader>rd", function()
+						vim.cmd.RustLsp("renderDiagnostic")
+					end, "Render diagnostic")
+					map("<leader>rE", function()
+						vim.cmd.RustLsp("explainError")
+					end, "Explain error")
+				end,
+			})
+		end,
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -423,6 +477,17 @@ require("lazy").setup({
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
+		config = function(_, opts)
+			local snacks = require("snacks")
+			snacks.setup(opts)
+
+			local blend = snacks.util.blend
+			snacks.util.blend = function(fg, bg, alpha)
+				fg = fg or bg or "#000000"
+				bg = bg or fg or "#000000"
+				return blend(fg, bg, alpha)
+			end
+		end,
 		opts = {
 			bigfile = { enabled = true },
 			indent = { enabled = true },
@@ -497,6 +562,8 @@ require("lazy").setup({
 				"markdown",
 				"markdown_inline",
 				"query",
+				"rust",
+				"toml",
 				"vim",
 				"vimdoc",
 			},
@@ -554,6 +621,7 @@ require("lazy").setup({
 				{ "<leader>r", group = "[R]ename" },
 				{ "<leader>s", group = "[S]earch" },
 				{ "<leader>w", group = "[W]orkspace" },
+				{ "<leader>x", group = "Diagnostics" },
 				{ "<leader>t", group = "[T]oggle" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
 			},
@@ -578,6 +646,9 @@ require("lazy").setup({
 		config = function()
 			require("telescope").setup({
 				defaults = {
+					preview = {
+						treesitter = false,
+					},
 					mappings = {
 						i = { ["<c-enter>"] = "to_fuzzy_refine" },
 					},
@@ -639,6 +710,18 @@ require("lazy").setup({
 			end, { desc = "[S]earch [N]eovim files" })
 		end,
 	},
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		keys = {
+			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
+			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
+			{ "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols" },
+			{ "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List" },
+			{ "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List" },
+		},
+		opts = {},
+	},
 
 	-- lsp
 	{
@@ -681,9 +764,16 @@ require("lazy").setup({
 					map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
 					map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+					map("<leader>e", vim.diagnostic.open_float, "Line diagnostics")
+					map("[d", function()
+						vim.diagnostic.jump({ count = -1, float = true })
+					end, "Previous diagnostic")
+					map("]d", function()
+						vim.diagnostic.jump({ count = 1, float = true })
+					end, "Next diagnostic")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
-					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+					if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
 						local highlight_augroup =
 							vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
 						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
@@ -705,7 +795,7 @@ require("lazy").setup({
 						})
 					end
 
-					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+					if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
 						map("<leader>th", function()
 							vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 						end, "[T]oggle Inlay [H]ints")
@@ -724,15 +814,6 @@ require("lazy").setup({
 				},
 				gopls = {},
 				pyright = {},
-				rust_analyzer = {
-					settings = {
-						["rust-analyzer"] = {
-							cargo = { allTargets = true },
-							procMacro = { enable = true },
-							checkOnSave = { command = "clippy", allTargets = true },
-						},
-					},
-				},
 				jdtls = {},
 				lua_ls = {
 					settings = {
@@ -746,7 +827,7 @@ require("lazy").setup({
 			require("mason").setup()
 
 			local ensure_installed = vim.tbl_keys(servers or {})
-			vim.list_extend(ensure_installed, { "stylua" })
+			vim.list_extend(ensure_installed, { "rust_analyzer", "stylua" })
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 			require("mason-lspconfig").setup({
@@ -792,6 +873,7 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				c = { "clang-format" },
+				rust = { "rustfmt" },
 				javascript = { "clang-format" },
 				javascriptreact = { "clang-format" },
 				typescript = { "prettier" },
@@ -801,6 +883,54 @@ require("lazy").setup({
 	},
 
 	-- completion
+	{
+		"saecki/crates.nvim",
+		tag = "stable",
+		event = { "BufRead Cargo.toml" },
+		keys = {
+			{
+				"<leader>cu",
+				function()
+					require("crates").update_crate()
+				end,
+				ft = "toml",
+				desc = "Update crate",
+			},
+			{
+				"<leader>cU",
+				function()
+					require("crates").update_all_crates()
+				end,
+				ft = "toml",
+				desc = "Update all crates",
+			},
+			{
+				"<leader>cf",
+				function()
+					require("crates").show_features_popup()
+				end,
+				ft = "toml",
+				desc = "Show crate features",
+			},
+			{
+				"<leader>cv",
+				function()
+					require("crates").show_versions_popup()
+				end,
+				ft = "toml",
+				desc = "Show crate versions",
+			},
+			{
+				"<leader>cd",
+				function()
+					require("crates").open_documentation()
+				end,
+				ft = "toml",
+				desc = "Open crate docs",
+			},
+		},
+		opts = {},
+	},
 	{ "hrsh7th/cmp-buffer" },
 	{ "mfussenegger/nvim-jdtls" },
 	{
