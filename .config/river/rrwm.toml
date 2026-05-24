@@ -1,0 +1,115 @@
+# rrwm doesn't have opacity for windows WHYYYYYYYYYYY
+# leaving this here if it ever gets updated or if i want to commit a pr,
+# to sway i go
+[input.keyboard]
+layout = "us"
+variant = "qwerty"
+model = "pc105"
+numlock = "true"
+
+[output.DP-1]
+focus_at_startup = "false"
+mode = "2560x1440@360.000"
+scale = "1"
+transform = "normal"
+position = { x = "0", y = "0" }
+
+[output.DP-3]
+focus_at_startup = "true"
+mode = "2560x1440@165.000"
+scale = "1"
+transform = "90"
+position = { x = "-1440", y = "-640" }
+
+[waybar]
+tag_icons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+focused_style = "<span color='#e2e2e3'>"
+occupied_style = "<span color='#494d64'>"
+empty_style = "<span color='#313244'>"
+
+[animations]
+enable = "true"
+duration = "150"
+
+[window]
+smart_borders = "false"
+gaps = "0"
+
+[window.active]
+border = { width = "3", color = "#e2e2e3", resize_color = "#ff5555" }
+
+[window.rule]
+match = [
+  { appid = "firefox-developer-edition", icon = "" },
+  { appid = "kitty", icon = "" },
+  { appid = "thunar", icon = "" },
+  { appid = "hyprland-run", floating = "true" },
+  { appid = "mpv", floating = "true", fullscreen = "true" },
+]
+
+[keybindings.super]
+f = { action = "toggle_fullscreen" }
+q = { action = "spawn", args = ["kitty"] }
+c = { action = "close_focused" }
+e = { action = "spawn", args = ["thunar"] }
+v = { action = "toggle_window_floating" }
+w = { action = "spawn", args = ["firefox-developer-edition"] }
+h = { action = "focus", args = ["left"] }
+l = { action = "focus", args = ["right"] }
+k = { action = "focus", args = ["up"] }
+j = { action = "focus", args = ["down"] }
+1 = { action = "focus", args = ["1"] }
+2 = { action = "focus", args = ["2"] }
+3 = { action = "focus", args = ["3"] }
+4 = { action = "focus", args = ["4"] }
+5 = { action = "focus", args = ["5"] }
+6 = { action = "focus", args = ["6"] }
+7 = { action = "focus", args = ["7"] }
+8 = { action = "focus", args = ["8"] }
+9 = { action = "focus", args = ["9"] }
+0 = { action = "focus", args = ["10"] }
+
+[keybindings.alt]
+space = { action = "spawn", args = ["wofi", "--show", "drun"] }
+z = { action = "spawn", args = ["killall", "-SIGUSR1", "gpu-screen-recorder"] }
+Tab = { action = "toggle_minimize_restore" }
+
+[keybindings."super+shift"]
+s = { action = "spawn", args = ["hyprshot", "-m", "region", "--clipboard-only"] }
+h = { action = "move", args = ["left"] }
+l = { action = "move", args = ["right"] }
+k = { action = "move", args = ["up"] }
+j = { action = "move", args = ["down"] }
+Right = { action = "move", args = ["right_output"] }
+Left = { action = "move", args = ["left_output"] }
+1 = { action = "move", args = ["1"] }
+2 = { action = "move", args = ["2"] }
+3 = { action = "move", args = ["3"] }
+4 = { action = "move", args = ["4"] }
+5 = { action = "move", args = ["5"] }
+6 = { action = "move", args = ["6"] }
+7 = { action = "move", args = ["7"] }
+8 = { action = "move", args = ["8"] }
+9 = { action = "move", args = ["9"] }
+0 = { action = "move", args = ["10"] }
+
+[keybindings."alt+shift"]
+Tab = { action = "toggle_minimize_restore" }
+
+[keybindings."super+alt"]
+l = { action = "grow_width", unit = "100" }
+h = { action = "shrink_width", unit = "100" }
+k = { action = "shrink_height", unit = "100" }
+j = { action = "grow_height", unit = "100" }
+
+[keybindings]
+XF86AudioRaiseVolume = { action = "shell", cmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+" }
+XF86AudioLowerVolume = { action = "shell", cmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-" }
+XF86AudioMute = { action = "shell", cmd = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" }
+XF86AudioMicMute = { action = "shell", cmd = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle" }
+XF86MonBrightnessUp = { action = "spawn", args = ["brightnessctl", "--class=backlight", "set", "+10%"] }
+XF86MonBrightnessDown = { action = "spawn", args = ["brightnessctl", "--class=backlight", "set", "10%-"] }
+
+[pointer.super]
+BTN_LEFT = { action = "move_interactive" }
+BTN_RIGHT = { action = "resize_interactive" }
