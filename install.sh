@@ -315,10 +315,13 @@ install_npm_packages() {
 
     if command -v npm &> /dev/null; then
         npm install -g \
+            eslint \
+            eslint_d \
             pyright \
             prettier \
             typescript \
             typescript-language-server \
+            vscode-langservers-extracted \
             neovim
         print_success "npm packages installed successfully"
     else

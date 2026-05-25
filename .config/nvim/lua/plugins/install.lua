@@ -546,36 +546,43 @@ require("lazy").setup({
 		},
 	},
 
-	-- treesitter
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
-		opts = {
-			ensure_installed = {
-				"bash",
-				"c",
-				"diff",
-				"html",
-				"lua",
-				"luadoc",
-				"markdown",
-				"markdown_inline",
-				"query",
-				"rust",
-				"toml",
-				"vim",
-				"vimdoc",
-			},
-			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = { "ruby" },
-				disable = { "latex" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
-	},
+	-- nvim-treesitter rip,
+	-- {
+	-- 	"nvim-treesitter/nvim-treesitter",
+	-- 	build = ":TSUpdate",
+	-- 	main = "nvim-treesitter.configs",
+	-- 	opts = {
+	-- 		ensure_installed = {
+	-- 			"bash",
+	-- 			"c",
+	-- 			"diff",
+	-- 			"html",
+	-- 			"javascript",
+	-- 			"jsdoc",
+	-- 			"lua",
+	-- 			"luadoc",
+	-- 			"markdown",
+	-- 			"markdown_inline",
+	-- 			"query",
+	-- 			"rust",
+	-- 			"tsx",
+	-- 			"typescript",
+	-- 			"toml",
+	-- 			"vim",
+	-- 			"vimdoc",
+	-- 		},
+	-- 		auto_install = true,
+	-- 		highlight = {
+	-- 			enable = true,
+	-- 			additional_vim_regex_highlighting = { "ruby" },
+	-- 			disable = { "latex" },
+	-- 		},
+	-- 		indent = {
+	-- 			enable = true,
+	-- 			disable = { "javascript", "javascriptreact", "typescript", "typescriptreact", "tsx", "ruby" },
+	-- 		},
+	-- 	},
+	-- },
 
 	-- navigation
 	{
@@ -808,13 +815,45 @@ require("lazy").setup({
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
+			local function find_eslint_root(filename)
+				local dir = vim.fs.dirname(filename)
+				if not dir then
+					return nil
+				end
+
+				if vim.uv.fs_stat(dir .. "/node_modules/eslint") then
+					return dir
+				end
+
+				for parent in vim.fs.parents(dir) do
+					if vim.uv.fs_stat(parent .. "/node_modules/eslint") then
+						return parent
+					end
+				end
+
+				return nil
+			end
+
 			local servers = {
 				clangd = {
 					cmd = { "clangd", "--offset-encoding=utf-16", "--fallback-style=webkit" },
 				},
+				eslint = {
+					root_dir = function(bufnr, on_dir)
+						local filename = vim.api.nvim_buf_get_name(bufnr)
+						local root = find_eslint_root(filename)
+						if root then
+							on_dir(root)
+						end
+					end,
+					settings = {
+						workingDirectory = { mode = "auto" },
+					},
+				},
 				gopls = {},
 				pyright = {},
 				jdtls = {},
+				ts_ls = {},
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -827,19 +866,16 @@ require("lazy").setup({
 			require("mason").setup()
 
 			local ensure_installed = vim.tbl_keys(servers or {})
-			vim.list_extend(ensure_installed, { "rust_analyzer", "stylua" })
+			vim.list_extend(ensure_installed, { "rust_analyzer", "stylua", "prettier" })
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-			require("mason-lspconfig").setup({
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						vim.lsp.config(server_name, server)
-						vim.lsp.enable(server_name)
-					end,
-				},
-			})
+			require("mason-lspconfig").setup({ automatic_enable = false })
+
+			for server_name, server in pairs(servers) do
+				server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+				vim.lsp.config(server_name, server)
+				vim.lsp.enable(server_name)
+			end
 		end,
 	},
 
@@ -874,8 +910,8 @@ require("lazy").setup({
 				lua = { "stylua" },
 				c = { "clang-format" },
 				rust = { "rustfmt" },
-				javascript = { "clang-format" },
-				javascriptreact = { "clang-format" },
+				javascript = { "prettier" },
+				javascriptreact = { "prettier" },
 				typescript = { "prettier" },
 				typescriptreact = { "prettier" },
 			},

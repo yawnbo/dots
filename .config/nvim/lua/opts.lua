@@ -40,6 +40,24 @@ vim.opt.scrolloff = 10
 
 vim.o.tabstop = 2
 vim.o.shiftwidth = 2
+vim.o.softtabstop = 2
+vim.o.expandtab = true
+vim.o.autoindent = true
+vim.o.smartindent = true
+vim.cmd("filetype plugin indent on")
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("js-ts-indent", { clear = true }),
+	pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	callback = function()
+		vim.bo.tabstop = 2
+		vim.bo.shiftwidth = 2
+		vim.bo.softtabstop = 2
+		vim.bo.expandtab = true
+		vim.bo.autoindent = true
+		vim.bo.smartindent = false
+	end,
+})
 
 -- keybinds for buffers
 local function delete_buffer(buf, opts)
