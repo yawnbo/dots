@@ -42,6 +42,7 @@ set -g status-interval 10     # redraw status line every 10 seconds
 # activity
 set -g monitor-activity on
 set -g visual-activity off
+set-option -g destroy-unattached off
 
 # -- pane handlers ------------------------------------------------------------
 
@@ -114,11 +115,12 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 # set -g @dracula-left-icon-padding 0
 
 # kanagawa
-set -g @plugin 'Nybkox/tmux-kanagawa'
-set -g @kanagawa-theme 'dragon'
-set -g @kanagawa-ignore-window-colors true
-set -g @kanagawa-plugins "cpu-usage gpu-usage weather"
-set -g @kanagawa-show-powerline true
+set -g @plugin 'yawnbo/tmux-ukiyo'
+set -g @ukiyo-theme 'ansi/tty'
+set -g @ukiyo-ignore-window-colors true
+# cpu-usage gpu-usage weather
+set -g @ukiyo-plugins "cpu-usage"
+set -g @ukiyo-show-powerline true
 set-option -a terminal-features 'xterm-kitty:RGB'
 
 bind r source-file ~/.tmux.conf \; display '~/.tmux.conf sourced'
