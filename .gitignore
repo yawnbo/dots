@@ -5,3 +5,5 @@ lazy-lock.json
 *.swo
 app.toml
 .gitconfig
+**/gh
+**/go
