@@ -128,6 +128,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 	alias z='/opt/homebrew/bin/zoxide'
 elif [[ "$(uname)" == "Linux" ]]; then
+  export PATH="$PATH:/opt/nvim/"
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
    #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
