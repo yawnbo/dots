@@ -850,7 +850,7 @@ require("lazy").setup({
 						workingDirectory = { mode = "auto" },
 					},
 				},
-				gopls = {},
+				-- gopls = {},
 				pyright = {},
 				jdtls = {},
 				ts_ls = {},
