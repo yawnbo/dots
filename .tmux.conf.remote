@@ -1,7 +1,8 @@
 # -- general -------------------------------------------------------------------
 
 # im used to ctrl-a but for ssh connections ill stick with ctrl b to not overlap
-set-option -g prefix C-b
+set-option -g prefix C-j
+unbind C-b
 
 # set fish as the default shell
 # set-option -g default-shell "/usr/bin/fish"
