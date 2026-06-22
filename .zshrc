@@ -127,6 +127,9 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	# curl stuff
 	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 	alias z='/opt/homebrew/bin/zoxide'
+  # needed for pi install because brew doesn't link the node path for whatever reason,
+  # this is probably my fault because node was installed manually long ago, fixme
+  export PATH="/opt/homebrew/Cellar/node/26.3.0/bin:$PATH"
 elif [[ "$(uname)" == "Linux" ]]; then
   export PATH="$PATH:/opt/nvim/"
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
@@ -157,6 +160,7 @@ alias listlines="git ls-files --exclude-standard -- ':!:**/*.[pjs][npv]g' ':!:**
 alias paste="curl -F 'file=@-' 0x0.st"
 alias nv="nvim"
 alias fixme='find . -type f -exec sed -i "" "s/\/\/ FIXME:/\/\/ TODO:/g" {} +'
+alias l='eza -l'
 
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
