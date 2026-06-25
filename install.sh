@@ -131,7 +131,6 @@ install_packages() {
                 fd-find \
                 fzf \
                 nodejs \
-                npm \
                 python3 \
                 python3-pip \
                 lua5.4 \
@@ -148,6 +147,7 @@ install_packages() {
                 cargo \
                 rustc \
                 default-jdk \
+                python3-pynvim
                 # software-properties-common
 
             if [[ "$OS" == "ubuntu" ]]; then
@@ -314,7 +314,7 @@ install_npm_packages() {
     print_info "Installing npm packages..."
 
     if command -v npm &> /dev/null; then
-        npm install -g \
+        sudo npm install -g \
             eslint \
             eslint_d \
             pyright \
@@ -333,7 +333,8 @@ install_python_packages() {
     print_info "Installing Python packages..."
 
     if command -v pip3 &> /dev/null; then
-        pip3 install --user pynvim
+        # should be provided by python3-pynvim in most distros
+        # pip3 install --user pynvim
         print_success "Python packages installed successfully"
     else
         print_warning "pip3 not found, skipping Python packages"
