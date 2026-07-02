@@ -26,9 +26,9 @@ export ORANGE=0xccfe8019
 export MAGENTA=0xccd3869b
 export GREY=0xcca89984
 export TRANSPARENT=0x00000000
-export BG0=0xcc32302f
-export BG1=0xcc3c3836
-export BG2=0xcc504945
+export BG0=0x6632302f
+export BG1=$TRANSPARENT
+export BG2=0x80ffffff
 
 ### Gruvbox (original) dark soft
 # export BLACK=0xff282828
