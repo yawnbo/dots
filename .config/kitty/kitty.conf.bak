@@ -9,7 +9,7 @@ include current-theme.conf
 # for fonts-
 # grep through fc-list
 # fira code, CaskaydiaCove Nerd Font Mono 
-font_family CaskaydiaCove Nerd Font Mono 
+font_family IosevkaTerm Nerd Font
 disable_ligatures cursor
 close_window_with_confirmation 0
 confirm_os_window_close 0
