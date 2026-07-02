@@ -35,7 +35,7 @@ spotify_title=(
   padding_left=0
   padding_right=0
   width=0
-  label.font="$FONT:Heavy:15.0"
+  label.font="$FONT:ExtraBold:15.0"
   label.max_chars=20
   y_offset=55
 )
