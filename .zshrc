@@ -118,6 +118,7 @@ source $ZSH/oh-my-zsh.sh
 #source ~/src/themes/comfyline.zsh-theme
 #source ~/src/themes/heap.zsh-theme
 
+unsetopt interactivecomments
 
 if [[ "$(uname)" == "Darwin" ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
@@ -198,4 +199,5 @@ deploy() {
 }
 
 eval "$(starship init zsh)"
+eval "$(omp completions zsh)"
 # eval "$(zoxide init zsh)"
