@@ -14,6 +14,15 @@ export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR=nvim
+
+if [[ "$TERM" == "dumb" || -z "$TERM" ]]; then
+  export TERM=xterm-256color
+fi
+
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -135,6 +144,7 @@ elif [[ "$(uname)" == "Linux" ]]; then
   export PATH="$PATH:/opt/nvim/"
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
+  export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
    #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
