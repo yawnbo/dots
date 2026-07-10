@@ -33,4 +33,8 @@ $YABAI -m config                              \
     window_shadow               off           \
     window_gap                  0
 
+# The external display lives on Space 10. Reserve extra room below the
+# SketchyBar there so tiled windows start lower instead of touching it.
+$YABAI -m config --space 10 top_padding 50
+
 echo "yabai configuration loaded."

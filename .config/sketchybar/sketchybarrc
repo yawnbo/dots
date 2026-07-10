@@ -21,10 +21,10 @@ $CONFIG_DIR/helper/helper $HELPER > /dev/null 2>&1 &
 # Setting up the general bar appearance of the bar
 bar=(
   height=60
-  color=$BAR_COLOR
+  color=0x0032302f
   border_width=0
   border_color=$BAR_BORDER_COLOR
-  blur_radius=32
+  blur_radius=0
   shadow=off
   position=top
   sticky=on
