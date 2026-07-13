@@ -148,15 +148,28 @@ install_packages() {
                 rustc \
                 default-jdk \
                 python3-pynvim
-                # software-properties-common
 
-            if [[ "$OS" == "ubuntu" ]]; then
-                sudo add-apt-repository -y ppa:neovim-ppa/unstable
-                sudo apt update
-                sudo apt install -y neovim
-            else
-                sudo apt install -y neovim
-            fi
+            NVIM_VERSION="0.12.2"
+            case "$(dpkg --print-architecture)" in
+                arm64)
+                    NVIM_ARCH="arm64"
+                    ;;
+                amd64)
+                    NVIM_ARCH="x86_64"
+                    ;;
+                *)
+                    print_error "Unsupported architecture for Neovim: $(dpkg --print-architecture)"
+                    exit 1
+                    ;;
+            esac
+
+            print_info "Installing Neovim ${NVIM_VERSION}..."
+            curl -fsSL \
+                -o /tmp/nvim.tar.gz \
+                "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${NVIM_ARCH}.tar.gz"
+            sudo tar xzf /tmp/nvim.tar.gz --strip-components=1 -C /usr/local
+            sudo chmod +x /usr/local/bin/nvim
+            rm -f /tmp/nvim.tar.gz
 
             if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
                 sudo ln -sf $(which fdfind) /usr/local/bin/fd
