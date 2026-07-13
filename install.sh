@@ -149,8 +149,8 @@ install_packages() {
                 default-jdk \
                 python3-pynvim
 
-            NVIM_VERSION="0.12.2"
-            case "$(dpkg --print-architecture)" in
+            DEBIAN_ARCH="$(dpkg --print-architecture)"
+            case "$DEBIAN_ARCH" in
                 arm64)
                     NVIM_ARCH="arm64"
                     ;;
@@ -158,15 +158,15 @@ install_packages() {
                     NVIM_ARCH="x86_64"
                     ;;
                 *)
-                    print_error "Unsupported architecture for Neovim: $(dpkg --print-architecture)"
+                    print_error "Unsupported architecture for Neovim: ${DEBIAN_ARCH}"
                     exit 1
                     ;;
             esac
 
-            print_info "Installing Neovim ${NVIM_VERSION}..."
+            print_info "Installing the latest stable Neovim release..."
             curl -fsSL \
                 -o /tmp/nvim.tar.gz \
-                "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${NVIM_ARCH}.tar.gz"
+                "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${NVIM_ARCH}.tar.gz"
             sudo tar xzf /tmp/nvim.tar.gz --strip-components=1 -C /usr/local
             sudo chmod +x /usr/local/bin/nvim
             rm -f /tmp/nvim.tar.gz
