@@ -4,6 +4,11 @@ Clone repo
 ``` bash
 git clone https://github.com/yawnbo/dots.git ~/
 ```
+Run the installer to install the default tools (including Oh My Pi) and stow their settings:
+``` bash
+cd ~/dots && ./install.sh
+```
+
 Stow files (this REMOVES and OVERWRITES files do NOT use without backing up)
 ``` bash
 cd ~/dots && \

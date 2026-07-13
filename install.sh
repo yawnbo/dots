@@ -352,6 +352,17 @@ install_lua_packages() {
     fi
 }
 
+install_omp() {
+    if command -v omp &> /dev/null; then
+        print_info "Oh My Pi already installed"
+        return
+    fi
+
+    print_info "Installing Oh My Pi..."
+    curl -fsSL https://omp.sh/install | sh
+    print_success "Oh My Pi installed successfully"
+}
+
 install_oh_my_zsh() {
     if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
         print_info "Installing oh-my-zsh..."
@@ -471,6 +482,7 @@ main() {
     echo ""
 
     install_lua_packages
+    install_omp
     echo ""
 
     install_oh_my_zsh
