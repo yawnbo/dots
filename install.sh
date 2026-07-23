@@ -153,12 +153,14 @@ install_packages() {
             case "$DEBIAN_ARCH" in
                 arm64)
                     NVIM_ARCH="arm64"
+                    LAZYGIT_ARCH="arm64"
                     ;;
                 amd64)
                     NVIM_ARCH="x86_64"
+                    LAZYGIT_ARCH="x86_64"
                     ;;
                 *)
-                    print_error "Unsupported architecture for Neovim: ${DEBIAN_ARCH}"
+                    print_error "Unsupported Debian architecture: ${DEBIAN_ARCH}"
                     exit 1
                     ;;
             esac
@@ -186,11 +188,13 @@ install_packages() {
 
             if ! command -v lazygit &> /dev/null; then
                 print_info "Installing lazygit..."
-                LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-                curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-                tar xf lazygit.tar.gz lazygit
-                sudo install lazygit /usr/local/bin
-                rm lazygit lazygit.tar.gz
+                LAZYGIT_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+                curl -fsSL \
+                    -o /tmp/lazygit.tar.gz \
+                    "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_linux_${LAZYGIT_ARCH}.tar.gz"
+                tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
+                sudo install -m 755 /tmp/lazygit /usr/local/bin/lazygit
+                rm -f /tmp/lazygit /tmp/lazygit.tar.gz
             fi
 
             if ! command -v starship &> /dev/null; then
