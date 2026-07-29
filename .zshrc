@@ -15,6 +15,9 @@ export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR=nvim
 
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+
 if [[ "$TERM" == "dumb" || -z "$TERM" ]]; then
   export TERM=xterm-256color
 fi
@@ -88,14 +91,37 @@ CASE_SENSITIVE="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+# Keep generated CLI completions on fpath so compinit can autoload them.
+# Expose OMP completions to compinit without parsing them during every shell.
+if (( $+commands[omp] )); then
+  _omp_completion_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
+  _omp_completion_file="$_omp_completion_dir/_omp"
+  if [[ ! -r "$_omp_completion_file" || "${commands[omp]}" -nt "$_omp_completion_file" ]]; then
+    mkdir -p "$_omp_completion_dir"
+    omp completions zsh >| "$_omp_completion_file"
+  fi
+  fpath=("$_omp_completion_dir" $fpath)
+  unset _omp_completion_dir _omp_completion_file
+fi
 
-source $ZSH/oh-my-zsh.sh
+# The full Oh My Zsh loader spends most of startup initializing unused prompt
+# machinery. Load completion, everyday helpers, and the selected plugins directly.
+autoload -Uz compinit
+_zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
+[[ -d "${_zcompdump:h}" ]] || mkdir -p "${_zcompdump:h}"
+compinit -C -d "$_zcompdump"
+unset _zcompdump
+
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+autoload -Uz colors && colors
+for _omz_lib in cli clipboard completion diagnostics directories functions git grep history key-bindings misc; do
+  source "$ZSH/lib/$_omz_lib.zsh"
+done
+unset _omz_lib
+
+source "$ZSH/plugins/git/git.plugin.zsh"
+source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # User configuration
 
@@ -129,7 +155,7 @@ source $ZSH/oh-my-zsh.sh
 
 unsetopt interactivecomments
 
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$OSTYPE" == darwin* ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
 	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
 	alias gnu="/opt/homebrew/bin/g++-14"
@@ -137,14 +163,12 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	# curl stuff
 	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 	alias z='/opt/homebrew/bin/zoxide'
-  # needed for pi install because brew doesn't link the node path for whatever reason,
-  # this is probably my fault because node was installed manually long ago, fixme
-  export PATH="/opt/homebrew/Cellar/node/26.3.1/bin:$PATH"
-elif [[ "$(uname)" == "Linux" ]]; then
+  export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+elif [[ "$OSTYPE" == linux* ]]; then
   export PATH="$PATH:/opt/nvim/"
 	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
 	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
-  export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+  
    #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
@@ -208,6 +232,14 @@ deploy() {
 	rsync -avz --exclude target/ --exclude .git/ --exclude '*.db' --exclude '*.db-wal' --exclude '*.db-shm' ./ "${DEPLOY_HOST}":~/"$project"/
 }
 
-eval "$(starship init zsh)"
-eval "$(omp completions zsh)"
+# Cache Starship's shell integration and refresh it only after upgrades.
+if (( $+commands[starship] )); then
+  _starship_init_cache="${XDG_CACHE_HOME:-$HOME/.cache}/starship/init.zsh"
+  if [[ ! -r "$_starship_init_cache" || "${commands[starship]}" -nt "$_starship_init_cache" ]]; then
+    mkdir -p "${_starship_init_cache:h}"
+    starship init zsh >| "$_starship_init_cache"
+  fi
+  source "$_starship_init_cache"
+  unset _starship_init_cache
+fi
 # eval "$(zoxide init zsh)"

@@ -79,8 +79,6 @@ install_packages() {
                 lazygit \
                 starship \
                 zoxide \
-                nodejs \
-                npm \
                 python \
                 python-pip \
                 lua \
@@ -168,14 +166,16 @@ install_packages() {
             case "$DEBIAN_ARCH" in
                 arm64)
                     NVIM_ARCH="arm64"
+                    LAZYGIT_ARCH="arm64"
                     NODE_ARCH="arm64"
                     ;;
                 amd64)
                     NVIM_ARCH="x86_64"
                     NODE_ARCH="x64"
+                    LAZYGIT_ARCH="x86_64"
                     ;;
                 *)
-                    print_error "Unsupported architecture: ${DEBIAN_ARCH}"
+                    print_error "Unsupported Debian architecture: ${DEBIAN_ARCH}"
                     exit 1
                     ;;
             esac
@@ -244,11 +244,13 @@ install_packages() {
 
             if ! command -v lazygit &> /dev/null; then
                 print_info "Installing lazygit..."
-                LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-                curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-                tar xf lazygit.tar.gz lazygit
-                sudo install lazygit /usr/local/bin
-                rm lazygit lazygit.tar.gz
+                LAZYGIT_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+                curl -fsSL \
+                    -o /tmp/lazygit.tar.gz \
+                    "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_linux_${LAZYGIT_ARCH}.tar.gz"
+                tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
+                sudo install -m 755 /tmp/lazygit /usr/local/bin/lazygit
+                rm -f /tmp/lazygit /tmp/lazygit.tar.gz
             fi
 
             if ! command -v starship &> /dev/null; then
@@ -282,8 +284,6 @@ install_packages() {
                 ripgrep \
                 fd-find \
                 fzf \
-                nodejs \
-                npm \
                 python3 \
                 python3-pip \
                 lua \
@@ -358,7 +358,6 @@ install_packages() {
                 lazygit \
                 starship \
                 zoxide \
-                node \
                 python3 \
                 lua \
                 luarocks \
@@ -381,11 +380,34 @@ install_packages() {
     print_success "System packages installed successfully"
 }
 
+install_nvm() {
+    if [[ -n "${XDG_CONFIG_HOME:-}" ]]; then
+        export NVM_DIR="$XDG_CONFIG_HOME/nvm"
+    else
+        export NVM_DIR="$HOME/.nvm"
+    fi
+
+    if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+        print_info "Installing NVM..."
+        PROFILE=/dev/null bash -c \
+            'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash'
+    else
+        print_info "NVM already installed"
+    fi
+
+    source "$NVM_DIR/nvm.sh"
+    nvm install --lts
+    nvm alias default 'lts/*'
+    nvm use default
+
+    print_success "NVM $(nvm --version) and Node $(node --version) installed successfully"
+}
+
 install_npm_packages() {
     print_info "Installing npm packages..."
 
     if command -v npm &> /dev/null; then
-        sudo npm install -g \
+        npm install -g \
             eslint \
             eslint_d \
             pyright \
@@ -545,6 +567,9 @@ main() {
 
     install_packages
     echo ""
+    install_nvm
+    echo ""
+
 
     install_npm_packages
     echo ""
