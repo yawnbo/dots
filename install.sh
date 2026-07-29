@@ -456,6 +456,17 @@ install_omp() {
     print_success "Oh My Pi installed successfully"
 }
 
+install_opencode() {
+    if command -v opencode &> /dev/null; then
+        print_info "OpenCode already installed"
+        return
+    fi
+
+    print_info "Installing OpenCode..."
+    curl -fsSL https://opencode.ai/install | bash
+    print_success "OpenCode installed successfully"
+}
+
 install_oh_my_zsh() {
     if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
         print_info "Installing oh-my-zsh..."
@@ -579,6 +590,7 @@ main() {
 
     install_lua_packages
     install_omp
+    install_opencode
     echo ""
 
     install_oh_my_zsh
