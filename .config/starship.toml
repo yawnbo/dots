@@ -1,37 +1,53 @@
-"$schema" = 'https://starship.rs/config-schema.json'
+"$schema" = "https://starship.rs/config-schema.json"
+
+palette = "catppuccin_mocha"
+add_newline = false
+command_timeout = 1000
+
+# A flat, lightweight prompt: primary context on the left, contextual tooling
+# in the middle, and transient diagnostics aligned on the right.
 format = """
-[](surface0)\
 $os\
 $username\
-[](bg:peach fg:surface0)\
+$hostname\
 $directory\
-[](fg:peach bg:green)\
 $git_branch\
 $git_status\
-[](fg:green bg:purple)\
+$git_state\
+$git_metrics\
+$python\
+$nodejs\
+$rust\
+$golang\
+$java\
+$kotlin\
+$haskell\
+$lua\
+$php\
+$package\
+$docker_context\
+$kubernetes\
+$terraform\
+$aws\
+$gcloud\
+$container\
+$fill\
+$memory_usage\
+$battery\
+$cmd_duration\
+$status\
+$jobs\
 $time\
-[ ](fg:purple)\
-$line_break$character"""
+$line_break\
+$character"""
 
-palette = 'catppuccin_mocha'
-
-[palettes.gruvbox_dark]
-color_fg0 = '#fbf1c7'
-color_bg1 = '#3c3836'
-color_bg3 = '#665c54'
-color_blue = '#458588'
-color_aqua = '#689d6a'
-color_green = '#98971a'
-color_orange = '#d65d0e'
-color_purple = '#b16286'
-color_red = '#cc241d'
-color_yellow = '#d79921'
+continuation_prompt = "[∙ ](fg:overlay0)"
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
 flamingo = "#f2cdcd"
 pink = "#f5c2e7"
-orange = "#cba6f7"
+mauve = "#cba6f7"
 red = "#f38ba8"
 maroon = "#eba0ac"
 peach = "#fab387"
@@ -55,9 +71,14 @@ base = "#1e1e2e"
 mantle = "#181825"
 crust = "#11111b"
 
+[fill]
+symbol = " "
+
+# Session context stays compact locally and expands automatically over SSH or as root.
 [os]
 disabled = false
-style = "bg:surface0 fg:text"
+style = "fg:overlay1"
+format = "[$symbol ]($style)"
 
 [os.symbols]
 Windows = "󰍲"
@@ -65,8 +86,7 @@ Ubuntu = "󰕈"
 SUSE = ""
 Raspbian = "󰐿"
 Mint = "󰣭"
-# 
-Macos = "󰌽"
+Macos = "󰀵"
 Manjaro = ""
 Linux = "󰌽"
 Gentoo = "󰣨"
@@ -82,15 +102,24 @@ Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
 
 [username]
-show_always = true
-style_user = "bg:surface0 fg:text"
-style_root = "bg:surface0 fg:text"
-format = '[ $user ]($style)'
+show_always = false
+style_user = "fg:subtext0"
+style_root = "fg:red"
+format = "[$user ]($style)"
+
+[hostname]
+ssh_only = true
+style = "fg:subtext0"
+format = "[@$hostname ]($style)"
+trim_at = "."
 
 [directory]
-style = "fg:mantle bg:peach"
-format = "[ $path ]($style)"
-truncation_length = 9
+style = "fg:blue"
+read_only_style = "fg:red"
+format = "[$path]($style)[$read_only]($read_only_style)"
+truncation_length = 4
+truncate_to_repo = false
+read_only = " 󰌾"
 
 [directory.substitutions]
 "Documents" = "󰈙 "
@@ -99,79 +128,183 @@ truncation_length = 9
 "Pictures" = " "
 "Developer" = "󰲋 "
 
+# Git stays detailed without adding visual weight: branch, working tree, sync,
+# operation, and line-diff information appear only inside repositories.
 [git_branch]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol $branch ](fg:base bg:green)]($style)'
+style = "fg:mauve"
+format = "[ $symbol $branch(:$remote_branch)]($style)"
+truncation_length = 28
+truncation_symbol = "…"
 
 [git_status]
-style = "bg:teal"
-format = '[[($all_status$ahead_behind )](fg:base bg:green)]($style)'
+style = "fg:peach"
+format = "[$all_status$ahead_behind]($style)"
+conflicted = " ~${count}"
+ahead = " ⇡${count}"
+behind = " ⇣${count}"
+diverged = " ⇕⇡${ahead_count}⇣${behind_count}"
+untracked = " ?${count}"
+stashed = " *${count}"
+modified = " !${count}"
+staged = " +${count}"
+renamed = " »${count}"
+deleted = " ✘${count}"
+up_to_date = ""
+
+[git_state]
+style = "fg:yellow"
+format = "[ $state( $progress_current/$progress_total)]($style)"
+
+[git_metrics]
+disabled = false
+added_style = "fg:green"
+deleted_style = "fg:red"
+format = "([ +$added]($added_style))([ -$deleted]($deleted_style))"
+only_nonzero_diffs = true
+
+
+# Tooling appears only when the current directory activates it.
+[python]
+symbol = ""
+style = "fg:yellow"
+format = " [$symbol$version( \\($virtualenv\\))]($style)"
 
 [nodejs]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
-
-[c]
-symbol = " "
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+style = "fg:green"
+format = " [$symbol$version]($style)"
 
 [rust]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+style = "fg:peach"
+format = " [$symbol$version]($style)"
 
 [golang]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
-
-[php]
-symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+style = "fg:sky"
+format = " [$symbol$version]($style)"
 
 [java]
-symbol = " "
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+symbol = ""
+style = "fg:red"
+format = " [$symbol$version]($style)"
 
 [kotlin]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+style = "fg:mauve"
+format = " [$symbol$version]($style)"
 
 [haskell]
 symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+style = "fg:mauve"
+format = " [$symbol$version]($style)"
 
-[python]
-symbol = ""
-style = "bg:teal"
-format = '[[ $symbol( $version) ](fg:base bg:teal)]($style)'
+[lua]
+symbol = ""
+style = "fg:blue"
+format = " [$symbol$version]($style)"
+
+[php]
+symbol = ""
+style = "fg:lavender"
+format = " [$symbol$version]($style)"
+
+[package]
+symbol = "󰏗"
+style = "fg:subtext0"
+format = " [$symbol$version]($style)"
 
 [docker_context]
 symbol = ""
-style = "bg:mantle"
-format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
+style = "fg:blue"
+format = " [$symbol$context]($style)"
+only_with_files = true
+
+[kubernetes]
+disabled = false
+symbol = "󱃾"
+style = "fg:sapphire"
+format = " [$symbol$context(::$namespace)]($style)"
+
+[terraform]
+symbol = "󱁢"
+style = "fg:mauve"
+format = " [$symbol$workspace]($style)"
+
+[aws]
+symbol = ""
+style = "fg:peach"
+format = " [$symbol$profile( \\($region\\))]($style)"
+
+[gcloud]
+symbol = "󱇶"
+style = "fg:blue"
+format = " [$symbol$project]($style)"
+
+[container]
+symbol = "⬢"
+style = "fg:peach"
+format = " [$symbol $name]($style)"
+
+
+# The right edge is quiet in the common case: time is constant; the rest appears
+# only when it needs attention.
+[memory_usage]
+disabled = false
+threshold = 80
+symbol = "󰍛"
+style = "fg:yellow"
+format = "[$symbol $ram_pct]($style) "
+
+[battery]
+full_symbol = "󰁹"
+charging_symbol = "󰂄"
+discharging_symbol = "󰂃"
+format = "[$symbol$percentage]($style) "
+
+[[battery.display]]
+threshold = 10
+style = "fg:red"
+
+[[battery.display]]
+threshold = 25
+style = "fg:yellow"
+
+[cmd_duration]
+min_time = 2000
+show_milliseconds = false
+style = "fg:yellow"
+format = "[󰔛 $duration]($style) "
+
+[status]
+disabled = false
+symbol = "✘ "
+success_symbol = ""
+style = "fg:red"
+format = "[$symbol$status]($style) "
+map_symbol = true
+
+[jobs]
+symbol = "󰜎"
+style = "fg:sapphire"
+number_threshold = 1
+symbol_threshold = 1
+format = "[$symbol$number]($style) "
 
 [time]
 disabled = false
-time_format = "%R"
-style = "bg:peach"
-format = '[[  $time ](fg:mantle bg:purple)]($style)'
+time_format = "%H:%M"
+style = "fg:overlay1"
+format = "[ $time]($style)"
 
 [line_break]
 disabled = false
 
 [character]
-disabled = false
-success_symbol = '[](bold fg:green)'
-error_symbol = '[](bold fg:red)'
-vimcmd_symbol = '[](bold fg:creen)'
-vimcmd_replace_one_symbol = '[](bold fg:purple)'
-vimcmd_replace_symbol = '[](bold fg:purple)'
-vimcmd_visual_symbol = '[](bold fg:lavender)'
+success_symbol = "[❯](fg:mauve)"
+error_symbol = "[❯](fg:red)"
+vimcmd_symbol = "[❮](fg:mauve)"
+vimcmd_replace_one_symbol = "[❮](fg:peach)"
+vimcmd_replace_symbol = "[❮](fg:peach)"
+vimcmd_visual_symbol = "[❮](fg:yellow)"

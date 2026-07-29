@@ -79,8 +79,6 @@ install_packages() {
                 lazygit \
                 starship \
                 zoxide \
-                nodejs \
-                npm \
                 python \
                 python-pip \
                 lua \
@@ -130,7 +128,6 @@ install_packages() {
                 ripgrep \
                 fd-find \
                 fzf \
-                nodejs \
                 python3 \
                 python3-pip \
                 lua5.4 \
@@ -228,8 +225,6 @@ install_packages() {
                 ripgrep \
                 fd-find \
                 fzf \
-                nodejs \
-                npm \
                 python3 \
                 python3-pip \
                 lua \
@@ -304,7 +299,6 @@ install_packages() {
                 lazygit \
                 starship \
                 zoxide \
-                node \
                 python3 \
                 lua \
                 luarocks \
@@ -327,11 +321,34 @@ install_packages() {
     print_success "System packages installed successfully"
 }
 
+install_nvm() {
+    if [[ -n "${XDG_CONFIG_HOME:-}" ]]; then
+        export NVM_DIR="$XDG_CONFIG_HOME/nvm"
+    else
+        export NVM_DIR="$HOME/.nvm"
+    fi
+
+    if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+        print_info "Installing NVM..."
+        PROFILE=/dev/null bash -c \
+            'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash'
+    else
+        print_info "NVM already installed"
+    fi
+
+    source "$NVM_DIR/nvm.sh"
+    nvm install --lts
+    nvm alias default 'lts/*'
+    nvm use default
+
+    print_success "NVM $(nvm --version) and Node $(node --version) installed successfully"
+}
+
 install_npm_packages() {
     print_info "Installing npm packages..."
 
     if command -v npm &> /dev/null; then
-        sudo npm install -g \
+        npm install -g \
             eslint \
             eslint_d \
             pyright \
@@ -491,6 +508,9 @@ main() {
 
     install_packages
     echo ""
+    install_nvm
+    echo ""
+
 
     install_npm_packages
     echo ""
