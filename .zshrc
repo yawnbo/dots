@@ -243,3 +243,6 @@ if (( $+commands[starship] )); then
   unset _starship_init_cache
 fi
 # eval "$(zoxide init zsh)"
+
+# opencode
+export PATH=/Users/yawnbo/.opencode/bin:$PATH
