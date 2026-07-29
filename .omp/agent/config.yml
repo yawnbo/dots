@@ -1,20 +1,20 @@
 symbolPreset: nerd
-theme:
+theme: 
   light: light
   dark: dark-monokai
 setupVersion: 1
-statusLine:
+statusLine: 
   preset: default
   separator: powerline-thin
 defaultThinkingLevel: auto
 steeringMode: one-at-a-time
-bash:
-  autoBackground:
+bash: 
+  autoBackground: 
     enabled: true
-github:
+github: 
   enabled: true
-modelRoles:
-  default: openai-codex/gpt-5.6-sol:xhigh
+modelRoles: 
+  default: openai-codex/gpt-5.3-codex-spark:xhigh
 personality: pragmatic
 includeModelInPrompt: false
 textVerbosity: low

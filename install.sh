@@ -118,50 +118,108 @@ install_packages() {
             ;;
 
         debian|ubuntu)
-            sudo apt update
-            sudo apt install -y \
-                build-essential \
-                git \
-                curl \
-                wget \
-                zsh \
-                stow \
-                tmux \
-                ripgrep \
-                fd-find \
-                fzf \
-                nodejs \
-                python3 \
-                python3-pip \
-                lua5.4 \
-                luarocks \
-                gcc \
-                clang \
-                clang-format \
-                make \
-                cmake \
-                unzip \
-                xsel \
-                wl-clipboard \
-                golang \
-                cargo \
-                rustc \
-                default-jdk \
+            packages=(
+                build-essential
+                git
+                curl
+                wget
+                zsh
+                stow
+                tmux
+                ripgrep
+                fd-find
+                fzf
+                nodejs
+                python3
+                python3-pip
+                lua5.4
+                luarocks
+                gcc
+                clang
+                clang-format
+                make
+                cmake
+                unzip
+                xsel
+                wl-clipboard
+                golang
+                cargo
+                rustc
+                default-jdk
                 python3-pynvim
+            )
+            missing_packages=()
+
+            for package in "${packages[@]}"; do
+                status="$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true)"
+                if [[ "$status" != "install ok installed" ]]; then
+                    missing_packages+=("$package")
+                fi
+            done
+
+            if ((${#missing_packages[@]})); then
+                sudo apt update
+                sudo apt install -y "${missing_packages[@]}"
+            else
+                print_info "Required APT packages are already installed"
+            fi
 
             DEBIAN_ARCH="$(dpkg --print-architecture)"
             case "$DEBIAN_ARCH" in
                 arm64)
                     NVIM_ARCH="arm64"
+                    NODE_ARCH="arm64"
                     ;;
                 amd64)
                     NVIM_ARCH="x86_64"
+                    NODE_ARCH="x64"
                     ;;
                 *)
-                    print_error "Unsupported architecture for Neovim: ${DEBIAN_ARCH}"
+                    print_error "Unsupported architecture: ${DEBIAN_ARCH}"
                     exit 1
                     ;;
             esac
+
+            NODE_MAJOR=0
+            if command -v node &> /dev/null; then
+                NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
+            fi
+
+            if ((NODE_MAJOR < 22)); then
+                print_info "Installing the latest Node.js 22 release..."
+                curl -fsSL \
+                    -o /tmp/node-index.tab \
+                    https://nodejs.org/dist/index.tab
+                NODE_VERSION="$(awk -F '\t' \
+                    '$1 ~ /^v22\./ { print $1; exit }' /tmp/node-index.tab)"
+                rm -f /tmp/node-index.tab
+                if [[ -z "$NODE_VERSION" ]]; then
+                    print_error "Unable to determine the latest Node.js 22 release"
+                    exit 1
+                fi
+
+                NODE_DIST="node-${NODE_VERSION}-linux-${NODE_ARCH}"
+                curl -fsSL \
+                    -o "/tmp/${NODE_DIST}.tar.gz" \
+                    "https://nodejs.org/dist/${NODE_VERSION}/${NODE_DIST}.tar.gz"
+                curl -fsSL \
+                    -o /tmp/node-SHASUMS256.txt \
+                    "https://nodejs.org/dist/${NODE_VERSION}/SHASUMS256.txt"
+                NODE_CHECKSUM="$(awk -v file="${NODE_DIST}.tar.gz" \
+                    '$2 == file { print $1 }' /tmp/node-SHASUMS256.txt)"
+                if [[ -z "$NODE_CHECKSUM" ]]; then
+                    print_error "Unable to verify the Node.js download"
+                    exit 1
+                fi
+
+                printf '%s  %s\n' \
+                    "$NODE_CHECKSUM" "/tmp/${NODE_DIST}.tar.gz" |
+                    sha256sum --check --status
+                sudo tar xzf "/tmp/${NODE_DIST}.tar.gz" \
+                    --strip-components=1 -C /usr/local
+                rm -f "/tmp/${NODE_DIST}.tar.gz" /tmp/node-SHASUMS256.txt
+                hash -r
+            fi
 
             print_info "Installing the latest stable Neovim release..."
             curl -fsSL \
