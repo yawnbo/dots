@@ -1,5 +1,20 @@
-# Iris Autocomplete
-eval "$(iris init zsh)"
+# If you come from bash you might have to change your $PATH.
+export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+
+# Enter tmux before IRIS so each remote pane gets its own IRIS PTY wrapper.
+if [[ -o interactive && -n "${SSH_TTY:-}" && -z "${TMUX:-}" &&
+      -z "${IRIS_PID:-}" && -z "${IRIS_RESCUE:-}" ]] &&
+   (( $+commands[tmux] )); then
+  if tmux has-session 2>/dev/null; then
+    exec tmux attach
+  else
+    exec tmux -f "$HOME/.tmux.conf.remote" new-session -s main
+  fi
+fi
+
+if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[iris] )); then
+  eval "$(iris init zsh)"
+fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -10,9 +25,6 @@ eval "$(iris init zsh)"
 # p10k again
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -202,13 +214,6 @@ alias l='eza -l'
 
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
-
-if [ -n "$SSH_CONNECTION" ]; then
-  export TMUX_CONF="$HOME/.tmux.conf.remote"
-	tmux attach
-else
-  export TMUX_CONF="$HOME/.tmux.conf.local"
-fi
 
 # launch tmux in kitty
 TMUX_PARENT_SESSION="main"

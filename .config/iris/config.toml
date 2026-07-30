@@ -1,38 +1,37 @@
 [core]
-version = 1
-shell = "zsh"
-mode = "last"
-debug = false
-expand-alias = true
+  version = 1
+  shell = "zsh"
+  mode = "last"
+  debug = false
+  expand-alias = true
 
 [ui]
-style = "modern"
-ghost-text = true
-hidden-files = false
-max-suggestions = 100
-max-height = 15
-nerd-fonts = true
-
-[keybindings]
-toggle-mode = "ctrl+r"
-toggle-menu = "shift+tab"
+  style = "modern"
+  ghost-text = true
+  hidden-files = false
+  max-suggestions = 100
+  max-height = 20
+  nerd-fonts = true
 
 [git]
-filter-active-branch = true
-deduplicate-branches = true
+  filter-active-branch = true
+  deduplicate-branches = true
 
 [updater]
-check-on-startup = true
-channel = "stable"
-check-interval = "24h"
+  check-on-startup = true
+  channel = "stable"
+  check-interval = "24h0m0s"
 
 [ai]
-enabled = false
-provider = ""
-debounce_ms = 500
-min_interval_ms = 1000
+  enabled = false
+  provider = ""
+  debounce_ms = 500
+  min_interval_ms = 1000
+  [ai.suggest_on_empty]
+    enabled = false
+    debounce_ms = 800
+    min_interval_ms = 5000
 
-[ai.suggest_on_empty]
-enabled = false
-debounce_ms = 800
-min_interval_ms = 5000
+[keybindings]
+  toggle-mode = "ctrl+r"
+  toggle-menu = "shift+tab"
