@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/tui.json",
-  "theme": "system",
+  "theme": "ansi-tty",
   "keybinds": {
     "messages_copy": "none"
   }
