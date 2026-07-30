@@ -467,6 +467,17 @@ install_opencode() {
     print_success "OpenCode installed successfully"
 }
 
+install_iris() {
+    if command -v iris &> /dev/null; then
+        print_info "IRIS already installed"
+        return
+    fi
+
+    print_info "Installing IRIS..."
+    curl -sSL https://raw.githubusercontent.com/versenilvis/iris/main/scripts/install.sh | sh
+    print_success "IRIS installed successfully"
+}
+
 install_oh_my_zsh() {
     if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
         print_info "Installing oh-my-zsh..."
@@ -537,6 +548,17 @@ setup_nvim() {
     print_success "Neovim setup complete"
 }
 
+setup_iris_config() {
+    if [[ "$OS" != "macos" ]]; then
+        return
+    fi
+
+    local iris_config_dir="$HOME/Library/Application Support/iris"
+    mkdir -p "$iris_config_dir"
+    ln -sfn "$HOME/.config/iris/config.toml" "$iris_config_dir/config.toml"
+    print_success "IRIS config linked for macOS"
+}
+
 change_shell() {
     if [[ "$SHELL" != *"zsh"* ]]; then
         print_info "Changing default shell to zsh..."
@@ -591,6 +613,7 @@ main() {
     install_lua_packages
     install_omp
     install_opencode
+    install_iris
     echo ""
 
     install_oh_my_zsh
@@ -600,6 +623,8 @@ main() {
     echo ""
 
     setup_dotfiles
+    echo ""
+    setup_iris_config
     echo ""
 
     setup_nvim
