@@ -3,6 +3,7 @@
 palette = "catppuccin_mocha"
 add_newline = false
 command_timeout = 1000
+scan_timeout = 100
 
 # A flat, lightweight prompt: primary context on the left, contextual tooling
 # in the middle, and transient diagnostics aligned on the right.
