@@ -1,0 +1,30 @@
+[completion]
+# Aster abstains instead of filling this list with low-confidence candidates.
+max_candidates = 8
+
+# Accept Aster's highlighted completion with Ctrl-Space.
+key = "ctrl-space"
+
+# Accept one path or shell segment at a time.
+accept = "segment"
+
+[history]
+# Match common shell history privacy behavior.
+ignore_leading_space = true
+
+# Prefer commands known to have completed successfully.
+successful_first = true
+
+[ui]
+# Match the active Kitty ansi-tty theme.
+menu_width = 64
+max_visible = 6
+prompt_offset = 2
+border = "#5f87af"
+accent = "#afd787"
+text = "#c2b8a3"
+muted = "#6f6a60"
+ghost = "#6f6a60"
+selected_background = "#3a3228"
+selected_text = "#ebdbb2"
+selected_source = "#87d7d7"

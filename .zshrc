@@ -1,31 +1,14 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH
 
-# Enter tmux before IRIS so each remote pane gets its own IRIS PTY wrapper.
-if [[ -o interactive && -n "${SSH_TTY:-}" && -z "${TMUX:-}" &&
-      -z "${IRIS_PID:-}" && -z "${IRIS_RESCUE:-}" ]] &&
+# Auto-attach remote shells before loading interactive shell integrations.
+if [[ -o interactive && -n "${SSH_TTY:-}" && -z "${TMUX:-}" ]] &&
    (( $+commands[tmux] )); then
   if tmux has-session 2>/dev/null; then
     exec tmux attach
   else
     exec tmux -f "$HOME/.tmux.conf.remote" new-session -s main
   fi
-fi
-
-if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[iris] )); then
-  eval "$(iris init zsh)"
-fi
-
-# Iris owns tmux's foreground process, so keep the child shell's cwd on the pane.
-if [[ -n "${TMUX_PANE:-}" ]] && (( $+commands[tmux] )); then
-  _tmux_update_pane_cwd() {
-    tmux set-option -p -q -t "$TMUX_PANE" @shell_cwd "$PWD"
-  }
-
-  autoload -Uz add-zsh-hook
-  add-zsh-hook chpwd _tmux_update_pane_cwd
-  add-zsh-hook precmd _tmux_update_pane_cwd
-  _tmux_update_pane_cwd
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -147,7 +130,6 @@ done
 unset _omz_lib
 
 source "$ZSH/plugins/git/git.plugin.zsh"
-source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # User configuration
@@ -288,3 +270,8 @@ fi
 
 # opencode
 export PATH=/Users/yawnbo/.opencode/bin:$PATH
+
+# Load Aster after shell plugins so its conservative Tab widget runs first.
+if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[aster] )); then
+  eval "$(aster init zsh)"
+fi

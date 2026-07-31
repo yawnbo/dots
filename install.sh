@@ -467,15 +467,20 @@ install_opencode() {
     print_success "OpenCode installed successfully"
 }
 
-install_iris() {
-    if command -v iris &> /dev/null; then
-        print_info "IRIS already installed"
+install_aster() {
+    if command -v aster &> /dev/null; then
+        print_info "Aster already installed"
         return
     fi
 
-    print_info "Installing IRIS..."
-    curl -sSL https://raw.githubusercontent.com/versenilvis/iris/main/scripts/install.sh | sh
-    print_success "IRIS installed successfully"
+    print_info "Installing Aster..."
+    local aster_source="${ASTER_SOURCE_DIR:-$HOME/dev/gitrepos/aster}"
+    if [[ -f "$aster_source/Cargo.toml" ]]; then
+        cargo install --locked --path "$aster_source"
+    else
+        cargo install --locked --git https://github.com/yawnbo/aster.git
+    fi
+    print_success "Aster installed successfully"
 }
 
 install_oh_my_zsh() {
@@ -548,17 +553,6 @@ setup_nvim() {
     print_success "Neovim setup complete"
 }
 
-setup_iris_config() {
-    if [[ "$OS" != "macos" ]]; then
-        return
-    fi
-
-    local iris_config_dir="$HOME/Library/Application Support/iris"
-    mkdir -p "$iris_config_dir"
-    ln -sfn "$HOME/.config/iris/config.toml" "$iris_config_dir/config.toml"
-    print_success "IRIS config linked for macOS"
-}
-
 change_shell() {
     if [[ "$SHELL" != *"zsh"* ]]; then
         print_info "Changing default shell to zsh..."
@@ -613,7 +607,7 @@ main() {
     install_lua_packages
     install_omp
     install_opencode
-    install_iris
+    install_aster
     echo ""
 
     install_oh_my_zsh
@@ -624,9 +618,6 @@ main() {
 
     setup_dotfiles
     echo ""
-    setup_iris_config
-    echo ""
-
     setup_nvim
     echo ""
 

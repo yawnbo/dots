@@ -32,6 +32,7 @@ set -g base-index 1           # start windows numbering at 1
 setw -g pane-base-index 1     # make pane numbering consistent with windows
 
 setw -g automatic-rename on   # rename window to reflect current program
+setw -g automatic-rename-format "#{?#{==:#{pane_title},aster},aster,#{pane_current_command}}"
 set -g renumber-windows on    # renumber windows when a window is closed
 
 set -g set-titles on          # set terminal title
@@ -50,8 +51,8 @@ set -g visual-activity off
 # split panel using s for horizontal and v for vertical
 unbind %
 unbind \"
-bind % run-shell -C 'split-window -h -t #{q:pane_id} -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
-bind \" run-shell -C 'split-window -t #{q:pane_id} -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
+bind % split-window -h -c "#{pane_current_path}"
+bind \" split-window -c "#{pane_current_path}"
 
 unbind h
 unbind j
@@ -73,7 +74,7 @@ bind < swap-pane -U       # swap current pane with the previous one
 # -- window handlers ----------------------------------------------------------
 
 # open new window with the current path
-bind c run-shell -C 'new-window -t #{q:session_id}: -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
+bind c new-window -c "#{pane_current_path}"
 
 # -- miscellaneous ------------------------------------------------------------
 
@@ -126,3 +127,7 @@ set-option -as terminal-features ',xterm-kitty:clipboard,tmux-256color:clipboard
 
 bind r source-file ~/.tmux.conf \; display '~/.tmux.conf sourced'
 run '~/.tmux/plugins/tpm/tpm'
+
+# Keep status names compact: Aster at an idle Zsh prompt, final binary otherwise.
+setw -g window-status-format "#[fg=#c8c093]#[bg=#282727] #I #{?#{==:#{pane_title},aster},aster,#{pane_current_command}}"
+setw -g window-status-current-format "#[fg=#282727,bg=#393836]#[fg=#c8c093,bg=#393836] #I #{?#{==:#{pane_title},aster},aster,#{pane_current_command}} #[fg=#393836,bg=#282727]"
