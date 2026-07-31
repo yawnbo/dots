@@ -302,6 +302,25 @@ require("lazy").setup({
 			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 		},
 	},
+	{
+		"sindrets/diffview.nvim",
+		cmd = {
+			"DiffviewClose",
+			"DiffviewFileHistory",
+			"DiffviewFocusFiles",
+			"DiffviewOpen",
+			"DiffviewRefresh",
+			"DiffviewToggleFiles",
+		},
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		keys = {
+			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git diff view" },
+			{ "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "Git file history" },
+			{ "<leader>gF", "<cmd>DiffviewFileHistory<cr>", desc = "Git repository history" },
+			{ "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close git diff view" },
+		},
+		opts = {},
+	},
 	-- if i want to one day, i don't really use this though, tmux kinda solves the issue
 	-- {
 	-- 	"mfussenegger/nvim-dap",
