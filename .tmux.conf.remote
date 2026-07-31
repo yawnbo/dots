@@ -55,8 +55,8 @@ set-option -g destroy-unattached off
 # split panel using s for horizontal and v for vertical
 unbind %
 unbind \"
-bind % split-window -h -c "#{pane_current_path}"
-bind \" split-window -c "#{pane_current_path}"
+bind % run-shell -C 'split-window -h -t #{q:pane_id} -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
+bind \" run-shell -C 'split-window -t #{q:pane_id} -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
 
 unbind h
 unbind j
@@ -78,7 +78,7 @@ bind < swap-pane -U       # swap current pane with the previous one
 # -- window handlers ----------------------------------------------------------
 
 # open new window with the current path
-bind c new-window -c "#{pane_current_path}"
+bind c run-shell -C 'new-window -t #{q:session_id}: -c #{q:#{?#{@shell_cwd},#{@shell_cwd},#{pane_current_path}}}'
 
 # -- miscellaneous ------------------------------------------------------------
 

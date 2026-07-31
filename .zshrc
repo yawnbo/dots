@@ -16,6 +16,18 @@ if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[iris] )); 
   eval "$(iris init zsh)"
 fi
 
+# Iris owns tmux's foreground process, so keep the child shell's cwd on the pane.
+if [[ -n "${TMUX_PANE:-}" ]] && (( $+commands[tmux] )); then
+  _tmux_update_pane_cwd() {
+    tmux set-option -p -q -t "$TMUX_PANE" @shell_cwd "$PWD"
+  }
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook chpwd _tmux_update_pane_cwd
+  add-zsh-hook precmd _tmux_update_pane_cwd
+  _tmux_update_pane_cwd
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -214,6 +226,28 @@ alias l='eza -l'
 
 # z
 [[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
+
+_switch_tmux_session() {
+  local session="$1"
+
+  if [[ -z "${TMUX:-}" ]]; then
+    exec tmux new-session -A -s "$session" -c "$PWD"
+  fi
+
+  if ! tmux has-session -t "=$session" 2>/dev/null; then
+    tmux new-session -d -s "$session" -c "$PWD" || return
+  fi
+
+  tmux switch-client -t "=$session"
+}
+
+work() {
+  _switch_tmux_session work
+}
+
+main() {
+  _switch_tmux_session main
+}
 
 # launch tmux in kitty
 TMUX_PARENT_SESSION="main"
