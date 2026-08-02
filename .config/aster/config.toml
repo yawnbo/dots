@@ -5,8 +5,8 @@ max_candidates = 8
 # Accept Aster's highlighted completion with Ctrl-Space.
 key = "ctrl-space"
 
-# Accept one path or shell segment at a time.
-accept = "segment"
+# Accept the whole suggestion; Tab advances one path or shell segment.
+accept = "full"
 
 [history]
 # Match common shell history privacy behavior.

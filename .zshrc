@@ -101,19 +101,6 @@ CASE_SENSITIVE="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Keep generated CLI completions on fpath so compinit can autoload them.
-# Expose OMP completions to compinit without parsing them during every shell.
-if (( $+commands[omp] )); then
-  _omp_completion_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
-  _omp_completion_file="$_omp_completion_dir/_omp"
-  if [[ ! -r "$_omp_completion_file" || "${commands[omp]}" -nt "$_omp_completion_file" ]]; then
-    mkdir -p "$_omp_completion_dir"
-    omp completions zsh >| "$_omp_completion_file"
-  fi
-  fpath=("$_omp_completion_dir" $fpath)
-  unset _omp_completion_dir _omp_completion_file
-fi
-
 # The full Oh My Zsh loader spends most of startup initializing unused prompt
 # machinery. Load completion, everyday helpers, and the selected plugins directly.
 autoload -Uz compinit

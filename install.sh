@@ -445,15 +445,15 @@ install_lua_packages() {
     fi
 }
 
-install_omp() {
-    if command -v omp &> /dev/null; then
-        print_info "Oh My Pi already installed"
+install_pi() {
+    if command -v pi &> /dev/null; then
+        print_info "Pi already installed"
         return
     fi
 
-    print_info "Installing Oh My Pi..."
-    curl -fsSL https://omp.sh/install | sh
-    print_success "Oh My Pi installed successfully"
+    print_info "Installing Pi..."
+    curl -fsSL https://pi.dev/install.sh | sh
+    print_success "Pi installed successfully"
 }
 
 install_opencode() {
@@ -474,12 +474,7 @@ install_aster() {
     fi
 
     print_info "Installing Aster..."
-    local aster_source="${ASTER_SOURCE_DIR:-$HOME/dev/gitrepos/aster}"
-    if [[ -f "$aster_source/Cargo.toml" ]]; then
-        cargo install --locked --path "$aster_source"
-    else
-        cargo install --locked --git https://github.com/yawnbo/aster.git
-    fi
+    cargo install --locked aster-completion
     print_success "Aster installed successfully"
 }
 
@@ -605,7 +600,7 @@ main() {
     echo ""
 
     install_lua_packages
-    install_omp
+    install_pi
     install_opencode
     install_aster
     echo ""
