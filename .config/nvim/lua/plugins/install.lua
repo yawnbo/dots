@@ -314,7 +314,7 @@ require("lazy").setup({
 		},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		keys = {
-			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git diff view" },
+			{ "<leader>gg", "<cmd>DiffviewOpen<cr>", desc = "Git diff view" },
 			{ "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "Git file history" },
 			{ "<leader>gF", "<cmd>DiffviewFileHistory<cr>", desc = "Git repository history" },
 			{ "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close git diff view" },
