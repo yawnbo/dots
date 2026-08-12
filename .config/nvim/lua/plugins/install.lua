@@ -605,6 +605,56 @@ require("lazy").setup({
 
 	-- navigation
 	{
+		"folke/flash.nvim",
+		event = "VeryLazy",
+		opts = {
+			-- `f` is the main Flash jump, so keep the native character motions disabled.
+			modes = { char = { enabled = false } },
+		},
+		keys = {
+			{
+				"f",
+				function()
+					require("flash").jump()
+				end,
+				mode = { "n", "x", "o" },
+				desc = "Flash jump",
+			},
+			{
+				"F",
+				function()
+					require("flash").treesitter()
+				end,
+				mode = { "n", "x", "o" },
+				desc = "Flash Treesitter",
+			},
+			{
+				"r",
+				function()
+					require("flash").remote()
+				end,
+				mode = "o",
+				desc = "Remote Flash",
+			},
+			{
+				"R",
+				function()
+					require("flash").treesitter_search()
+				end,
+				mode = "o",
+				desc = "Flash Treesitter search",
+			},
+			{
+				"<C-s>",
+				function()
+					require("flash").toggle()
+				end,
+				mode = "c",
+				desc = "Toggle Flash search",
+			},
+		},
+	},
+	{
 		"folke/which-key.nvim",
 		event = "VimEnter",
 		opts = {
