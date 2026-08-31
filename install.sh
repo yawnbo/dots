@@ -456,17 +456,6 @@ install_pi() {
     print_success "Pi installed successfully"
 }
 
-install_opencode() {
-    if command -v opencode &> /dev/null; then
-        print_info "OpenCode already installed"
-        return
-    fi
-
-    print_info "Installing OpenCode..."
-    curl -fsSL https://opencode.ai/install | bash
-    print_success "OpenCode installed successfully"
-}
-
 install_aster() {
     if command -v aster &> /dev/null; then
         print_info "Aster already installed"
@@ -601,7 +590,6 @@ main() {
 
     install_lua_packages
     install_pi
-    install_opencode
     install_aster
     echo ""
 
