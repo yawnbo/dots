@@ -456,6 +456,25 @@ install_pi() {
     print_success "Pi installed successfully"
 }
 
+install_vtr() {
+    if [[ "$OS" == "macos" ]]; then
+        print_info "VTR Linux binary install skipped on macOS"
+        return
+    fi
+
+    if command -v vtr &> /dev/null || [[ -x "$HOME/.local/bin/vtr" ]]; then
+        print_info "VTR already installed"
+        return
+    fi
+
+    local release_host="${VITREA_RELEASE_SSH_HOST:-yawnbonetcup@server.yawnbo.com}"
+    print_info "Installing VTR from $release_host..."
+    ssh -o BatchMode=yes "$release_host" \
+        'cat /home/yawnbonetcup/releases/vtr/install.sh' | \
+        VITREA_RELEASE_SSH_HOST="$release_host" bash
+    print_success "VTR installed successfully"
+}
+
 install_aster() {
     if command -v aster &> /dev/null; then
         print_info "Aster already installed"
@@ -590,6 +609,7 @@ main() {
 
     install_lua_packages
     install_pi
+    install_vtr
     install_aster
     echo ""
 
