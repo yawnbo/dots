@@ -978,6 +978,7 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				c = { "clang-format" },
+				cpp = { "clang-format" },
 				rust = { "rustfmt" },
 				javascript = { "prettier" },
 				javascriptreact = { "prettier" },
