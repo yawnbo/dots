@@ -7,17 +7,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1791835749,
-        "narHash": "sha256-Kgp1MKEuxDuDboaTfnNx716E7SejGdHyFUJ2q9fb6iI=",
+        "lastModified": 1791923239,
+        "narHash": "sha256-/UzCAsTw1OCaeAfuJzXxrDN2GuSaLwEoYs4AaaD9NPk=",
         "owner": "yawnbo",
         "repo": "aster",
-        "rev": "a434655398ed38239c2442729247eb353aa89f3b",
+        "rev": "2ecbbc36913d8d4c50ccdd242381a9f234c83045",
         "type": "github"
       },
       "original": {
         "owner": "yawnbo",
         "repo": "aster",
-        "rev": "a434655398ed38239c2442729247eb353aa89f3b",
+        "rev": "2ecbbc36913d8d4c50ccdd242381a9f234c83045",
         "type": "github"
       }
     },

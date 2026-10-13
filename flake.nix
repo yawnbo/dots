@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     aster = {
-      url = "github:yawnbo/aster/a434655398ed38239c2442729247eb353aa89f3b";
+      url = "github:yawnbo/aster/2ecbbc36913d8d4c50ccdd242381a9f234c83045";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     lorri = {
