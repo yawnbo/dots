@@ -1,641 +1,73 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+usage() {
+    cat <<'EOF'
+Usage: ./install.sh [build|switch] [profile]
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' 
+build   Build the Home Manager configuration without activating it.
+switch  Build and activate after confirmation (default). Back up conflicts.
 
-print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+The default profile is <username>-<architecture>-<darwin|linux>.
+Install Nix first. This script does not install Nix, change your login shell,
+remove existing packages, or install Pi or VTR.
+EOF
 }
 
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
+case "${1:-switch}" in
+    -h|--help) usage; exit 0 ;;
+    build|switch) action="${1:-switch}" ;;
+    *) usage >&2; exit 2 ;;
+esac
+if (( $# > 2 )); then
+    usage >&2
+    exit 2
+fi
 
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
+case "$(uname -s)" in
+    Darwin) platform=darwin ;;
+    Linux) platform=linux ;;
+    *) echo 'Only macOS and Linux are supported.' >&2; exit 1 ;;
+esac
+case "$(uname -m)" in
+    arm64|aarch64) architecture=aarch64 ;;
+    x86_64|amd64) architecture=x86_64 ;;
+    *) echo 'Only 64-bit ARM and x86 are supported.' >&2; exit 1 ;;
+esac
 
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+if ! command -v nix >/dev/null 2>&1; then
+    echo 'Nix is not installed or is not on PATH.' >&2
+    echo 'Install Nix, open a new shell, then run this script again. See README.md.' >&2
+    exit 1
+fi
 
-detect_os() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        OS="macos"
-        print_info "Detected macOS"
-    elif [[ -f /etc/os-release ]]; then
-        . /etc/os-release
-        case "$ID" in
-            arch|manjaro)
-                OS="arch"
-                print_info "Detected Arch-based system"
-                ;;
-            debian)
-                OS="debian"
-                print_info "Detected Debian"
-                ;;
-            ubuntu)
-                OS="ubuntu"
-                print_info "Detected Ubuntu"
-                ;;
-            fedora)
-                OS="fedora"
-                print_info "Detected Fedora"
-                ;;
-            *)
-                print_error "Unsupported distribution: $ID"
-                exit 1
-                ;;
-        esac
-    else
-        print_error "Unable to detect operating system"
-        exit 1
-    fi
-}
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+profile="${2:-$(id -un)-${architecture}-${platform}}"
 
-install_packages() {
-    print_info "Installing system packages..."
+# Git-backed flakes include tracked files only. Do not use path: here: it can
+# copy ignored files (including local secrets) into the world-readable store.
+if ! git -C "$script_dir" ls-files --error-unmatch -- \
+    flake.nix flake.lock home/default.nix home/lorri.nix >/dev/null 2>&1; then
+    echo 'Track the new Nix files before running the Git-backed flake:' >&2
+    echo '  git add flake.nix flake.lock home/default.nix home/lorri.nix' >&2
+    exit 1
+fi
 
-    case "$OS" in
-        arch)
-            sudo pacman -Syu --needed --noconfirm \
-                base-devel \
-                git \
-                curl \
-                wget \
-                zsh \
-                stow \
-                neovim \
-                tmux \
-                ripgrep \
-                fd \
-                fzf \
-                eza \
-                lazygit \
-                starship \
-                zoxide \
-                python \
-                python-pip \
-                lua \
-                luarocks \
-                gcc \
-                clang \
-                make \
-                cmake \
-                unzip \
-                xsel \
-                wl-clipboard \
-                go \
-                rust \
-                jdk-openjdk \
-                pyright \
-                lua-language-server \
-                gopls \
-                rust-analyzer \
-                stylua \
-                prettier
+# Also enable these features for the Home Manager subprocess on first setup.
+export NIX_CONFIG="${NIX_CONFIG:-}
+extra-experimental-features = nix-command flakes"
 
-            if ! command -v yay &> /dev/null; then
-                print_info "Installing yay AUR helper..."
-                cd /tmp
-                git clone https://aur.archlinux.org/yay.git
-                cd yay
-                makepkg -si --noconfirm
-                cd -
-            fi
-
-            yay -S --needed --noconfirm \
-                zsh-syntax-highlighting \
-                zsh-autosuggestions \
-                clang-format
-            ;;
-
-        debian|ubuntu)
-            packages=(
-                build-essential
-                git
-                curl
-                wget
-                zsh
-                stow
-                tmux
-                ripgrep
-                fd-find
-                fzf
-                nodejs
-                python3
-                python3-pip
-                lua5.4
-                luarocks
-                gcc
-                clang
-                clang-format
-                make
-                cmake
-                unzip
-                xsel
-                wl-clipboard
-                golang
-                cargo
-                rustc
-                default-jdk
-                python3-pynvim
-            )
-            missing_packages=()
-
-            for package in "${packages[@]}"; do
-                status="$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true)"
-                if [[ "$status" != "install ok installed" ]]; then
-                    missing_packages+=("$package")
-                fi
-            done
-
-            if ((${#missing_packages[@]})); then
-                sudo apt update
-                sudo apt install -y "${missing_packages[@]}"
-            else
-                print_info "Required APT packages are already installed"
-            fi
-
-            DEBIAN_ARCH="$(dpkg --print-architecture)"
-            case "$DEBIAN_ARCH" in
-                arm64)
-                    NVIM_ARCH="arm64"
-                    LAZYGIT_ARCH="arm64"
-                    NODE_ARCH="arm64"
-                    ;;
-                amd64)
-                    NVIM_ARCH="x86_64"
-                    NODE_ARCH="x64"
-                    LAZYGIT_ARCH="x86_64"
-                    ;;
-                *)
-                    print_error "Unsupported Debian architecture: ${DEBIAN_ARCH}"
-                    exit 1
-                    ;;
-            esac
-
-            NODE_MAJOR=0
-            if command -v node &> /dev/null; then
-                NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
-            fi
-
-            if ((NODE_MAJOR < 22)); then
-                print_info "Installing the latest Node.js 22 release..."
-                curl -fsSL \
-                    -o /tmp/node-index.tab \
-                    https://nodejs.org/dist/index.tab
-                NODE_VERSION="$(awk -F '\t' \
-                    '$1 ~ /^v22\./ { print $1; exit }' /tmp/node-index.tab)"
-                rm -f /tmp/node-index.tab
-                if [[ -z "$NODE_VERSION" ]]; then
-                    print_error "Unable to determine the latest Node.js 22 release"
-                    exit 1
-                fi
-
-                NODE_DIST="node-${NODE_VERSION}-linux-${NODE_ARCH}"
-                curl -fsSL \
-                    -o "/tmp/${NODE_DIST}.tar.gz" \
-                    "https://nodejs.org/dist/${NODE_VERSION}/${NODE_DIST}.tar.gz"
-                curl -fsSL \
-                    -o /tmp/node-SHASUMS256.txt \
-                    "https://nodejs.org/dist/${NODE_VERSION}/SHASUMS256.txt"
-                NODE_CHECKSUM="$(awk -v file="${NODE_DIST}.tar.gz" \
-                    '$2 == file { print $1 }' /tmp/node-SHASUMS256.txt)"
-                if [[ -z "$NODE_CHECKSUM" ]]; then
-                    print_error "Unable to verify the Node.js download"
-                    exit 1
-                fi
-
-                printf '%s  %s\n' \
-                    "$NODE_CHECKSUM" "/tmp/${NODE_DIST}.tar.gz" |
-                    sha256sum --check --status
-                sudo tar xzf "/tmp/${NODE_DIST}.tar.gz" \
-                    --strip-components=1 -C /usr/local
-                rm -f "/tmp/${NODE_DIST}.tar.gz" /tmp/node-SHASUMS256.txt
-                hash -r
-            fi
-
-            print_info "Installing the latest stable Neovim release..."
-            curl -fsSL \
-                -o /tmp/nvim.tar.gz \
-                "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${NVIM_ARCH}.tar.gz"
-            sudo tar xzf /tmp/nvim.tar.gz --strip-components=1 -C /usr/local
-            sudo chmod +x /usr/local/bin/nvim
-            rm -f /tmp/nvim.tar.gz
-
-            if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
-                sudo ln -sf $(which fdfind) /usr/local/bin/fd
-            fi
-
-            if ! command -v eza &> /dev/null; then
-                print_info "Installing eza..."
-                wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-                echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-                sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-                sudo apt update
-                sudo apt install -y eza
-            fi
-
-            if ! command -v lazygit &> /dev/null; then
-                print_info "Installing lazygit..."
-                LAZYGIT_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-                curl -fsSL \
-                    -o /tmp/lazygit.tar.gz \
-                    "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_linux_${LAZYGIT_ARCH}.tar.gz"
-                tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
-                sudo install -m 755 /tmp/lazygit /usr/local/bin/lazygit
-                rm -f /tmp/lazygit /tmp/lazygit.tar.gz
-            fi
-
-            if ! command -v starship &> /dev/null; then
-                print_info "Installing starship..."
-                curl -sS https://starship.rs/install.sh | sh -s -- -y
-            fi
-
-            if ! command -v zoxide &> /dev/null; then
-                print_info "Installing zoxide..."
-                curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-            fi
-
-            if [[ ! -d /usr/share/zsh-syntax-highlighting ]]; then
-                sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/share/zsh-syntax-highlighting
-            fi
-            if [[ ! -d /usr/share/zsh-autosuggestions ]]; then
-                sudo git clone https://github.com/zsh-users/zsh-autosuggestions /usr/share/zsh-autosuggestions
-            fi
-            ;;
-
-        fedora)
-            sudo dnf install -y \
-                @development-tools \
-                git \
-                curl \
-                wget \
-                zsh \
-                stow \
-                neovim \
-                tmux \
-                ripgrep \
-                fd-find \
-                fzf \
-                python3 \
-                python3-pip \
-                lua \
-                luarocks \
-                gcc \
-                clang \
-                clang-tools-extra \
-                make \
-                cmake \
-                unzip \
-                xsel \
-                wl-clipboard \
-                golang \
-                cargo \
-                rust \
-                java-latest-openjdk \
-                java-latest-openjdk-devel
-
-            if ! command -v eza &> /dev/null; then
-                print_info "Installing eza..."
-                sudo dnf install -y eza
-            fi
-
-            if ! command -v lazygit &> /dev/null; then
-                print_info "Installing lazygit..."
-                sudo dnf copr enable atim/lazygit -y
-                sudo dnf install -y lazygit
-            fi
-
-            if ! command -v starship &> /dev/null; then
-                print_info "Installing starship..."
-                curl -sS https://starship.rs/install.sh | sh -s -- -y
-            fi
-
-            if ! command -v zoxide &> /dev/null; then
-                print_info "Installing zoxide..."
-                curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-            fi
-
-            if [[ ! -d /usr/share/zsh-syntax-highlighting ]]; then
-                sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/share/zsh-syntax-highlighting
-            fi
-            if [[ ! -d /usr/share/zsh-autosuggestions ]]; then
-                sudo git clone https://github.com/zsh-users/zsh-autosuggestions /usr/share/zsh-autosuggestions
-            fi
-            ;;
-
-        macos)
-            if ! command -v brew &> /dev/null; then
-                print_info "Installing Homebrew..."
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-                if [[ $(uname -m) == "arm64" ]]; then
-                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-                    eval "$(/opt/homebrew/bin/brew shellenv)"
-                fi
-            fi
-
-            print_info "Installing packages via Homebrew..."
-            brew install \
-                git \
-                curl \
-                wget \
-                zsh \
-                stow \
-                neovim \
-                tmux \
-                ripgrep \
-                fd \
-                fzf \
-                eza \
-                lazygit \
-                starship \
-                zoxide \
-                python3 \
-                lua \
-                luarocks \
-                gcc \
-                llvm \
-                make \
-                cmake \
-                go \
-                rust \
-                openjdk \
-                zsh-syntax-highlighting \
-                zsh-autosuggestions
-
-            if [[ -d /opt/homebrew/opt/openjdk ]]; then
-                sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-            fi
-            ;;
+args=("$action" --flake "$script_dir#$profile")
+if [[ "$action" == switch ]]; then
+    backup="hm-backup-$(date -u +%Y%m%dT%H%M%SZ)-$$"
+    printf 'Apply %s? Conflicting files will be backed up with suffix .%s. [y/N] ' \
+        "$profile" "$backup"
+    read -r answer || exit 1
+    case "$answer" in
+        y|Y|yes|YES) ;;
+        *) echo 'Cancelled.'; exit 0 ;;
     esac
+    args+=(-b "$backup")
+fi
 
-    print_success "System packages installed successfully"
-}
-
-install_nvm() {
-    if [[ -n "${XDG_CONFIG_HOME:-}" ]]; then
-        export NVM_DIR="$XDG_CONFIG_HOME/nvm"
-    else
-        export NVM_DIR="$HOME/.nvm"
-    fi
-
-    if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
-        print_info "Installing NVM..."
-        PROFILE=/dev/null bash -c \
-            'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash'
-    else
-        print_info "NVM already installed"
-    fi
-
-    source "$NVM_DIR/nvm.sh"
-    nvm install --lts
-    nvm alias default 'lts/*'
-    nvm use default
-
-    print_success "NVM $(nvm --version) and Node $(node --version) installed successfully"
-}
-
-install_npm_packages() {
-    print_info "Installing npm packages..."
-
-    if command -v npm &> /dev/null; then
-        npm install -g \
-            eslint \
-            eslint_d \
-            pyright \
-            prettier \
-            typescript \
-            typescript-language-server \
-            vscode-langservers-extracted \
-            neovim
-        print_success "npm packages installed successfully"
-    else
-        print_warning "npm not found, skipping npm packages"
-    fi
-}
-
-install_python_packages() {
-    print_info "Installing Python packages..."
-
-    if command -v pip3 &> /dev/null; then
-        # should be provided by python3-pynvim in most distros
-        # pip3 install --user pynvim
-        print_success "Python packages installed successfully"
-    else
-        print_warning "pip3 not found, skipping Python packages"
-    fi
-}
-
-install_lua_packages() {
-    print_info "Installing Lua packages..."
-
-    if command -v luarocks &> /dev/null; then
-        luarocks install --local luacheck
-        print_success "Lua packages installed successfully"
-    else
-        print_warning "luarocks not found, skipping Lua packages"
-    fi
-}
-
-install_pi() {
-    if command -v pi &> /dev/null; then
-        print_info "Pi already installed"
-        return
-    fi
-
-    print_info "Installing Pi..."
-    curl -fsSL https://pi.dev/install.sh | sh
-    print_success "Pi installed successfully"
-}
-
-install_vtr() {
-    if [[ "$OS" == "macos" ]]; then
-        print_info "VTR Linux binary install skipped on macOS"
-        return
-    fi
-
-    if command -v vtr &> /dev/null || [[ -x "$HOME/.local/bin/vtr" ]]; then
-        print_info "VTR already installed"
-        return
-    fi
-
-    local release_host="${VITREA_RELEASE_SSH_HOST:-yawnbonetcup@server.yawnbo.com}"
-    print_info "Installing VTR from $release_host..."
-    ssh -o BatchMode=yes "$release_host" \
-        'cat /home/yawnbonetcup/releases/vtr/install.sh' | \
-        VITREA_RELEASE_SSH_HOST="$release_host" bash
-    print_success "VTR installed successfully"
-}
-
-install_aster() {
-    if command -v aster &> /dev/null; then
-        print_info "Aster already installed"
-        return
-    fi
-
-    print_info "Installing Aster..."
-    cargo install --locked aster-completion
-    print_success "Aster installed successfully"
-}
-
-install_oh_my_zsh() {
-    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-        print_info "Installing oh-my-zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        print_success "oh-my-zsh installed successfully"
-    else
-        print_info "oh-my-zsh already installed"
-    fi
-
-    if [[ "$OS" == "macos" ]]; then
-        print_info "zsh plugins installed via Homebrew"
-    else
-        if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]]; then
-            git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-                "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-        fi
-
-        if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]]; then
-            git clone https://github.com/zsh-users/zsh-autosuggestions \
-                "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-        fi
-    fi
-}
-
-install_tpm() {
-    if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-        print_info "Installing Tmux Plugin Manager..."
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-        print_success "TPM installed successfully"
-    else
-        print_info "TPM already installed"
-    fi
-}
-
-setup_dotfiles() {
-    print_info "Setting up dotfiles with GNU Stow..."
-
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-    # Check if stow is installed
-    if ! command -v stow &> /dev/null; then
-        print_error "GNU Stow is not installed. Please install it first."
-        exit 1
-    fi
-
-    # Change to the dotfiles directory
-    cd "$SCRIPT_DIR" || exit 1
-
-    # Use stow to create symlinks
-    # --adopt will move existing files into the stow directory
-    # git restore will then restore the original dotfiles versions
-    print_info "Running: stow --adopt ."
-    stow --adopt .
-
-    print_info "Restoring original dotfiles from git..."
-    git restore .
-
-    print_success "Dotfiles stowed successfully"
-}
-
-setup_nvim() {
-    print_info "Setting up Neovim..."
-
-    print_info "Neovim plugins will be installed on first run via lazy.nvim"
-
-    mkdir -p "$HOME/.local/share/nvim"
-
-    print_success "Neovim setup complete"
-}
-
-change_shell() {
-    if [[ "$SHELL" != *"zsh"* ]]; then
-        print_info "Changing default shell to zsh..."
-
-        if command -v zsh &> /dev/null; then
-            ZSH_PATH=$(which zsh)
-
-            if ! grep -q "$ZSH_PATH" /etc/shells; then
-                print_info "Adding zsh to /etc/shells..."
-                echo "$ZSH_PATH" | sudo tee -a /etc/shells
-            fi
-
-            chsh -s "$ZSH_PATH"
-            print_success "Default shell changed to zsh"
-            print_warning "Please log out and log back in for the shell change to take effect"
-        else
-            print_error "zsh not found in PATH"
-        fi
-    else
-        print_info "Default shell is already zsh"
-    fi
-}
-
-main() {
-    echo "╔════════════════════════════════════════╗"
-    echo "║   Dotfiles Installation Script         ║"
-    echo "╚════════════════════════════════════════╝"
-    echo ""
-
-    detect_os
-    echo ""
-
-    read -p "This script will install packages and setup dotfiles. Continue? (y/N) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_info "Installation cancelled"
-        exit 0
-    fi
-
-    install_packages
-    echo ""
-    install_nvm
-    echo ""
-
-
-    install_npm_packages
-    echo ""
-
-    install_python_packages
-    echo ""
-
-    install_lua_packages
-    install_pi
-    install_vtr
-    install_aster
-    echo ""
-
-    install_oh_my_zsh
-    echo ""
-
-    install_tpm
-    echo ""
-
-    setup_dotfiles
-    echo ""
-    setup_nvim
-    echo ""
-
-    change_shell
-    echo ""
-
-    print_success "Installation complete!"
-    echo ""
-    print_info "Next steps:"
-    echo "  1. Restart your terminal or run: source ~/.zshrc"
-    echo "  2. Open tmux and press Ctrl-a + I to install tmux plugins"
-    echo "  3. Open nvim - plugins will install automatically via lazy.nvim"
-    echo "  4. Run :checkhealth in nvim to verify everything is working"
-    echo ""
-    print_warning "Some changes may require logging out and back in to take effect"
-}
-
-main
+exec nix run "$script_dir#home-manager" -- "${args[@]}"

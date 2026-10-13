@@ -17,7 +17,6 @@ $git_status\
 $git_state\
 $git_metrics\
 $python\
-$nodejs\
 $rust\
 $golang\
 $java\
@@ -34,6 +33,7 @@ $gcloud\
 $container\
 $fill\
 $memory_usage\
+${custom.lorri}\
 $battery\
 $cmd_duration\
 $status\
@@ -171,11 +171,6 @@ symbol = ""
 style = "fg:yellow"
 format = " [$symbol$version( \\($virtualenv\\))]($style)"
 
-[nodejs]
-symbol = ""
-style = "fg:green"
-format = " [$symbol$version]($style)"
-
 [rust]
 symbol = ""
 style = "fg:peach"
@@ -257,6 +252,18 @@ threshold = 80
 symbol = "󰍛"
 style = "fg:yellow"
 format = "[$symbol $ram_pct]($style) "
+
+[custom.lorri]
+description = "Loaded lorri environment"
+when = 'test -n "$LORRI_PROJECT"'
+shell = ["sh"]
+command = '''
+project_dir=${LORRI_PROJECT%/*}
+printf '%s' "${project_dir##*/}"
+'''
+# Match the ANSI TTY tmux session marker (ansi_cyan).
+style = "fg:#87afaf"
+format = "[$output]($style) "
 
 [battery]
 full_symbol = "󰁹"

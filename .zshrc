@@ -1,5 +1,6 @@
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH
+# Local commands (including VTR) remain available. Prefer managed CLI tools.
+export PATH="$HOME/bin:/usr/local/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+[[ -d "$HOME/.nix-profile/bin" ]] && export PATH="$HOME/.nix-profile/bin:$PATH"
 
 # Auto-attach remote shells before loading interactive shell integrations.
 if [[ -o interactive && -n "${SSH_TTY:-}" && -z "${TMUX:-}" ]] &&
@@ -22,11 +23,8 @@ fi
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 export EDITOR=nvim
-
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
 
 if [[ "$TERM" == "dumb" || -z "$TERM" ]]; then
   export TERM=xterm-256color
@@ -117,7 +115,7 @@ done
 unset _omz_lib
 
 source "$ZSH/plugins/git/git.plugin.zsh"
-source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "${DOTS_ZSH_SYNTAX_HIGHLIGHTING:-${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh}"
 
 # User configuration
 
@@ -154,18 +152,20 @@ unsetopt interactivecomments
 if [[ "$OSTYPE" == darwin* ]]; then
 	# usage "valgrind /bin/sh -c 'cd **LAB**; meson build --reconfigure target; meson compile -C target; valgrind ./target/**LAB**"
 	alias valgrind='docker run -it -v $PWD:/tmp -w /tmp valgrind:1.0'
-	alias gnu="/opt/homebrew/bin/g++-14"
-	alias lastpad="yabai -m config --space $(yabai -m query --spaces | jq '.[-1].index') top_padding 56"
-	# curl stuff
-	export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-	alias z='/opt/homebrew/bin/zoxide'
+	alias gnu='g++'
+	alias lastpad="yabai -m config --space \$(yabai -m query --spaces | jq '.[-1].index') top_padding 56"
   export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
 elif [[ "$OSTYPE" == linux* ]]; then
-  export PATH="$PATH:/opt/nvim/"
-	export VIMTEX_OUTPUT_DIRECTORY='/home/yawnbo/pdfout/'
-	export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin"
-  
-   #alias bloodborne='~/src/shadPS4/build/shadps4 ~/.local/share/shadPS4/games/CUSA03173/eboot.bin'
+  # Keep existing NVM installations callable without startup initialization.
+  export NVM_DIR="${NVM_DIR:-${XDG_CONFIG_HOME:+$XDG_CONFIG_HOME/nvm}}"
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+  if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    nvm() {
+      unfunction nvm
+      source "$NVM_DIR/nvm.sh" --no-use || return
+      nvm "$@"
+    }
+  fi
 fi
 export VIMTEX_OUTPUT_DIRECTORY="$HOME/pdfout/"
 
@@ -246,19 +246,31 @@ deploy() {
 # Cache Starship's shell integration and refresh it only after upgrades.
 if (( $+commands[starship] )); then
   _starship_init_cache="${XDG_CACHE_HOME:-$HOME/.cache}/starship/init.zsh"
-  if [[ ! -r "$_starship_init_cache" || "${commands[starship]}" -nt "$_starship_init_cache" ]]; then
+  _starship_executable="${commands[starship]:A}"
+  # Nix store files have fixed timestamps, so also compare the resolved path.
+  if [[ ! -r "$_starship_init_cache" || ! -r "$_starship_init_cache.bin" ||
+        "$(< "$_starship_init_cache.bin")" != "$_starship_executable" ||
+        "$_starship_executable" -nt "$_starship_init_cache" ]]; then
     mkdir -p "${_starship_init_cache:h}"
-    starship init zsh >| "$_starship_init_cache"
+    if starship init zsh >| "$_starship_init_cache"; then
+      print -r -- "$_starship_executable" >| "$_starship_init_cache.bin"
+    fi
   fi
   source "$_starship_init_cache"
-  unset _starship_init_cache
+  unset _starship_init_cache _starship_executable
 fi
-# eval "$(zoxide init zsh)"
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi
 
-# opencode
-export PATH=/Users/yawnbo/.opencode/bin:$PATH
+# Optional local opencode installation; do not override Nix-managed commands.
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$PATH:$HOME/.opencode/bin"
 
 # Load Aster after shell plugins so its conservative Tab widget runs first.
 if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[aster] )); then
   eval "$(aster init zsh)"
+fi
+
+if [[ -o interactive ]] && (( $+commands[lorri] )); then
+  eval "$(lorri hook zsh)"
 fi
