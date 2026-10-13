@@ -57,6 +57,11 @@
     };
 
     home.activation.checkDotsCheckout = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+      if [[ ${lib.escapeShellArg config.xdg.configHome} -ef ${lib.escapeShellArg "${config.dots.checkoutPath}/.config"} ]]; then
+        echo 'Refusing activation: the XDG config directory points into this dotfiles checkout.' >&2
+        echo 'Separate the home config directory from the checkout before switching; keep the source files.' >&2
+        exit 1
+      fi
       if [[ ! -f ${lib.escapeShellArg "${config.dots.checkoutPath}/.config/nvim/init.lua"} ]]; then
         echo 'Neovim checkout missing. Set dots.checkoutPath to this repository.' >&2
         exit 1
