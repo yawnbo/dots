@@ -33,6 +33,11 @@
       ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = system: import nixpkgs { inherit system; };
+      # Only Home Manager needs local identity. Package outputs remain pure.
+      localValue = name:
+        let value = builtins.getEnv name;
+        in if value != "" then value else
+          throw "Missing ${name}. Use ./install.sh build or switch to supply local identity with --impure.";
     in {
       packages = forAllSystems (system: {
         aster = aster.packages.${system}.aster;
@@ -40,9 +45,8 @@
         home-manager = home-manager.packages.${system}.home-manager;
       });
 
-      homeConfigurations = builtins.listToAttrs (map (system: {
-        name = "yawnbo-${system}";
-        value = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations = forAllSystems (system:
+        home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           extraSpecialArgs = {
             aster = aster.packages.${system}.aster;
@@ -52,14 +56,11 @@
           modules = [
             ./home/default.nix
             {
-              home.username = "yawnbo";
-              home.homeDirectory =
-                if nixpkgs.lib.hasSuffix "-darwin" system
-                then "/Users/yawnbo"
-                else "/home/yawnbo";
+              home.username = localValue "DOTS_USERNAME";
+              home.homeDirectory = localValue "DOTS_HOME";
+              dots.checkoutPath = localValue "DOTS_CHECKOUT";
             }
           ];
-        };
-      }) systems);
+        });
     };
 }

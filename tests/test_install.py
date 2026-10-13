@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -26,12 +27,16 @@ class InstallerTests(unittest.TestCase):
             "MOCK_SYSTEM": "Darwin",
             "MOCK_ARCH": "arm64",
             "MOCK_GIT_STATUS": "0",
+            "MOCK_USERNAME": "yawnbo",
+            "MOCK_UID": "501",
             "NIX_CONFIG": "warn-dirty = false",
         }
         self.stub("uname", 'case "$1" in -s) echo "$MOCK_SYSTEM";; -m) echo "$MOCK_ARCH";; esac')
-        self.stub("id", "echo yawnbo")
+        self.stub("id", 'case "$1" in -u) echo "$MOCK_UID";; -un) echo "$MOCK_USERNAME";; *) exit 1;; esac')
         self.stub("git", 'exit "$MOCK_GIT_STATUS"')
-        self.stub("nix", 'printf "%s\\n" "$@" > "$CAPTURE"\nprintf "%s\\n" "$NIX_CONFIG" > "$CAPTURE.config"')
+        self.stub("nix", '''printf "%s\\n" "$@" > "$CAPTURE"
+printf "%s\\n" "$NIX_CONFIG" > "$CAPTURE.config"
+printf "%s\\n" "$DOTS_USERNAME" "$DOTS_HOME" "$DOTS_CHECKOUT" > "$CAPTURE.identity"''')
 
     def stub(self, name, body):
         path = self.bin / name
@@ -61,9 +66,58 @@ class InstallerTests(unittest.TestCase):
                 result = self.run_script("build")
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(self.capture.read_text().splitlines(), [
-                    "run", f"{ROOT}#home-manager", "--", "build", "--flake",
-                    f"{ROOT}#yawnbo-{profile}",
+                    "run", f"{ROOT}#home-manager", "--", "build", "--impure", "--flake",
+                    f"{ROOT}#{profile}",
                 ])
+
+    def test_local_identity_is_not_pinned_to_an_account(self):
+        home = self.work / "nonstandard home"
+        home.mkdir()
+        self.env.update(
+            HOME=str(home), MOCK_SYSTEM="Linux", MOCK_ARCH="aarch64",
+            USER="wrong-user", DOTS_USERNAME="wrong-user",
+            DOTS_HOME="/wrong-home", DOTS_CHECKOUT="/wrong-checkout",
+        )
+        for username in ["yan", "yan-kovari", "yawnbo"]:
+            with self.subTest(username=username):
+                self.env["MOCK_USERNAME"] = username
+                result = self.run_script("build")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                identity = Path(f"{self.capture}.identity").read_text().splitlines()
+                self.assertEqual(identity, [username, str(home), str(ROOT)])
+                self.assertEqual(self.capture.read_text().splitlines()[-1], f"{ROOT}#aarch64-linux")
+
+    def test_checkout_does_not_have_to_be_home_dots(self):
+        checkout = self.work / "config repos" / "my dots"
+        checkout.mkdir(parents=True)
+        script = checkout / "install.sh"
+        shutil.copy2(ROOT / "install.sh", script)
+        result = self.run_script("build", script=script)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        identity = Path(f"{self.capture}.identity").read_text().splitlines()
+        self.assertEqual(identity[2], str(checkout.resolve()))
+        self.assertEqual(self.capture.read_text().splitlines()[-1], f"{checkout.resolve()}#aarch64-darwin")
+
+    def test_root_is_rejected_before_running_nix(self):
+        self.env["MOCK_UID"] = "0"
+        for action in ["build", "switch"]:
+            with self.subTest(action=action):
+                result = self.run_script(action, answer="yes\n")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("not root or sudo", result.stderr)
+                self.assertFalse(self.capture.exists())
+
+    def test_invalid_home_is_rejected(self):
+        for home in [None, "", "relative/home", "/", str(self.work / "missing")]:
+            with self.subTest(home=home):
+                if home is None:
+                    self.env.pop("HOME", None)
+                else:
+                    self.env["HOME"] = home
+                result = self.run_script("build")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("HOME must be", result.stderr)
+                self.assertFalse(self.capture.exists())
 
     def test_explicit_profile_is_one_argument(self):
         result = self.run_script("build", "custom-profile")

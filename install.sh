@@ -8,9 +8,10 @@ Usage: ./install.sh [build|switch] [profile]
 build   Build the Home Manager configuration without activating it.
 switch  Build and activate after confirmation (default). Back up conflicts.
 
-The default profile is <username>-<architecture>-<darwin|linux>.
-Install Nix first. This script does not install Nix, change your login shell,
-remove existing packages, or install Pi or VTR.
+The default profile is <architecture>-<darwin|linux>.
+The current username, HOME, and checkout path are passed with --impure.
+Run as your own account, not root. Install Nix first. This script does not
+install Nix, change your login shell, remove packages, or install Pi or VTR.
 EOF
 }
 
@@ -22,6 +23,15 @@ esac
 if (( $# > 2 )); then
     usage >&2
     exit 2
+fi
+
+if [[ "$(id -u)" == 0 ]]; then
+    echo 'Run this installer as your own account, not root or sudo.' >&2
+    exit 1
+fi
+if [[ "${HOME:-}" != /* || "$HOME" == / || ! -d "$HOME" ]]; then
+    echo 'HOME must be an existing absolute directory other than /.' >&2
+    exit 1
 fi
 
 case "$(uname -s)" in
@@ -42,7 +52,11 @@ if ! command -v nix >/dev/null 2>&1; then
 fi
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-profile="${2:-$(id -un)-${architecture}-${platform}}"
+profile="${2:-${architecture}-${platform}}"
+DOTS_USERNAME="$(id -un)"
+export DOTS_USERNAME
+export DOTS_HOME="$HOME"
+export DOTS_CHECKOUT="$script_dir"
 
 # Git-backed flakes include tracked files only. Do not use path: here: it can
 # copy ignored files (including local secrets) into the world-readable store.
@@ -57,7 +71,9 @@ fi
 export NIX_CONFIG="${NIX_CONFIG:-}
 extra-experimental-features = nix-command flakes"
 
-args=("$action" --flake "$script_dir#$profile")
+printf 'Profile: %s\nAccount: %s\nHome: %s\nCheckout: %s\n' \
+    "$profile" "$DOTS_USERNAME" "$DOTS_HOME" "$DOTS_CHECKOUT"
+args=("$action" --impure --flake "$script_dir#$profile")
 if [[ "$action" == switch ]]; then
     backup="hm-backup-$(date -u +%Y%m%dT%H%M%SZ)-$$"
     printf 'Apply %s? Conflicting files will be backed up with suffix .%s. [y/N] ' \
