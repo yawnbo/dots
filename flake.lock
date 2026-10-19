@@ -49,17 +49,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1791929526,
-        "narHash": "sha256-yS6xmC+ruRXydIM3B/WLNC2aUYX9QfZpbaVEjgZby/0=",
+        "lastModified": 1792442537,
+        "narHash": "sha256-vCLnxpZoVBHdV8n6O79cIcm6wfy0+H4CjbIOugzXE1s=",
         "owner": "kovari-industries",
         "repo": "lorri",
-        "rev": "b3b2bfd165cae9b8e0c5f0291ce3efbcb04e43e9",
+        "rev": "b08c597b15f1783e8340b522f6fb0a06acb9da84",
         "type": "github"
       },
       "original": {
         "owner": "kovari-industries",
         "repo": "lorri",
-        "rev": "b3b2bfd165cae9b8e0c5f0291ce3efbcb04e43e9",
+        "rev": "b08c597b15f1783e8340b522f6fb0a06acb9da84",
         "type": "github"
       }
     },

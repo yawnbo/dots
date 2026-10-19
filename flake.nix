@@ -14,7 +14,7 @@
     };
     lorri = {
       # Native hooks plus Kovari's atomic-save and virtual-source watcher fixes.
-      url = "github:kovari-industries/lorri/b3b2bfd165cae9b8e0c5f0291ce3efbcb04e43e9";
+      url = "github:kovari-industries/lorri/b08c597b15f1783e8340b522f6fb0a06acb9da84";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tpm-src = {
