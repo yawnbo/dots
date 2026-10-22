@@ -4,8 +4,14 @@
   inputs = {
     # Use a matched release pair. 25.11 also supports Intel Macs.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    # Keep the base stable; use unstable only for tmux.
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     aster = {
@@ -23,7 +29,7 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, aster, lorri, tpm-src, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, rust-overlay, aster, lorri, tpm-src, ... }:
     let
       systems = [
         "aarch64-darwin"
@@ -32,7 +38,18 @@
         "x86_64-linux"
       ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
-      pkgsFor = system: import nixpkgs { inherit system; };
+      pkgsFor = system: import nixpkgs {
+        inherit system;
+        overlays = [
+          rust-overlay.overlays.default
+          (_final: prev: {
+            # Unstable dropped Intel Macs; build its tmux with stable dependencies there.
+            tmux = if system == "x86_64-darwin" then
+              prev.callPackage "${nixpkgs-unstable}/pkgs/by-name/tm/tmux/package.nix" { }
+            else nixpkgs-unstable.legacyPackages.${system}.tmux;
+          })
+        ];
+      };
       # Only Home Manager needs local identity. Package outputs remain pure.
       localValue = name:
         let value = builtins.getEnv name;

@@ -1,5 +1,15 @@
 { config, lib, pkgs, aster, tpm-src, ... }:
 
+let
+  # Home packages do not run development-shell setup hooks. Give the default
+  # macOS compiler explicit iconv paths without affecting project compilers.
+  defaultClang = pkgs.clang.override (lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+    nixSupport = {
+      cc-cflags = "-isystem ${lib.getDev pkgs.libiconv}/include";
+      cc-ldflags = "-L${lib.getLib pkgs.libiconv}/lib";
+    };
+  });
+in
 {
   imports = [ ./lorri.nix ];
 
@@ -23,8 +33,8 @@
       tmux ripgrep fd fzf eza lazygit starship zoxide zsh-autosuggestions
       python3 python3Packages.pip lua luarocks luaPackages.luacheck
       # Clang already has priority 10; lowPrio GCC would also be 10 and collide.
-      clang clang-tools (lib.setPrio 20 gcc) gnumake cmake unzip
-      go rustc cargo jdk nodejs_22
+      defaultClang clang-tools (lib.setPrio 20 gcc) libiconv gnumake cmake unzip
+      go (rust-bin.stable."1.99.0".default) jdk nodejs_22
       eslint eslint_d pyright prettier typescript typescript-language-server
       vscode-langservers-extracted lua-language-server gopls rust-analyzer stylua
       aster

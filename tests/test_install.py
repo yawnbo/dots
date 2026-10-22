@@ -43,6 +43,50 @@ printf "%s\\n" "$DOTS_USERNAME" "$DOTS_HOME" "$DOTS_CHECKOUT" > "$CAPTURE.identi
         path.write_text(f"#!/bin/sh\nset -eu\n{body}\n")
         path.chmod(0o755)
 
+    def prepare_bootstrap(self):
+        # Hide host executables, including Nix. Never source the host's daemon
+        # profile or contact the network when testing a missing installation.
+        installed_bin = self.work / "installed-nix/bin"
+        installed_bin.mkdir(parents=True)
+        shutil.copy2(self.bin / "nix", installed_bin / "nix")
+        (self.bin / "nix").unlink()
+        for command in ["dirname", "date", "mktemp", "rm", "sh", "cat"]:
+            (self.bin / command).symlink_to(shutil.which(command))
+        profile = self.work / ".nix-profile/etc/profile.d/nix.sh"
+        profile.parent.mkdir(parents=True)
+        startup = self.work / "bash-env"
+        startup.write_text('''source() {
+    case "$1" in
+        /nix/*) return 0 ;;
+        *) builtin source "$@" ;;
+    esac
+}
+''')
+        installer = self.work / "mock-installer"
+        installer.write_text('''#!/bin/sh
+set -eu
+printf '%s\\n' "$@" > "$CAPTURE.installer"
+if [ "${MOCK_INSTALL_STATUS:-0}" != 0 ]; then exit "$MOCK_INSTALL_STATUS"; fi
+if [ "${MOCK_NO_PROFILE:-0}" = 0 ]; then
+    printf 'export PATH="%s:$PATH"\\n' "$MOCK_NIX_BIN" > "$MOCK_NIX_PROFILE"
+fi
+''')
+        self.env.update(
+            PATH=str(self.bin), TMPDIR=str(self.work), BASH_ENV=str(startup),
+            MOCK_INSTALLER=str(installer), MOCK_NIX_BIN=str(installed_bin),
+            MOCK_NIX_PROFILE=str(profile),
+        )
+        self.stub("curl", '''printf '%s\\n' "$@" > "$CAPTURE.curl"
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --output) output=$2; shift 2 ;;
+        *) shift ;;
+    esac
+done
+/bin/cp "$MOCK_INSTALLER" "$output"
+exit "${MOCK_DOWNLOAD_STATUS:-0}"''')
+        return profile
+
     def run_script(self, *args, answer="", script="install.sh"):
         return subprocess.run(
             ["/bin/bash", str(ROOT / script), *args],
@@ -142,12 +186,88 @@ printf "%s\\n" "$DOTS_USERNAME" "$DOTS_HOME" "$DOTS_CHECKOUT" > "$CAPTURE.identi
         self.assertNotEqual(self.run_script("switch").returncode, 0)
         self.assertFalse(self.capture.exists())
 
-    def test_missing_nix_has_actionable_error(self):
-        (self.bin / "nix").unlink()
-        self.env["PATH"] = str(self.bin)
+    def test_missing_nix_is_installed_before_build(self):
+        self.prepare_bootstrap()
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(Path(f"{self.capture}.installer").read_text().splitlines(), ["--daemon"])
+        download = Path(f"{self.capture}.curl").read_text().splitlines()
+        self.assertIn("--fail", download)
+        self.assertIn("--proto-redir", download)
+        self.assertEqual(download[-1], "https://nixos.org/nix/install")
+        self.assertEqual(self.capture.read_text().splitlines()[3], "build")
+        self.assertEqual(list(self.work.glob("dots-nix-install.*")), [])
+
+    def test_existing_nix_does_not_run_installer(self):
+        self.stub("curl", 'echo unexpected > "$CAPTURE.curl"; exit 99')
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.curl").exists())
+
+    def test_existing_nix_profile_is_loaded_without_reinstalling(self):
+        profile = self.prepare_bootstrap()
+        profile.write_text(f'export PATH="{self.env["MOCK_NIX_BIN"]}:$PATH"\n')
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.curl").exists())
+        self.assertTrue(self.capture.exists())
+
+    def test_missing_curl_has_actionable_error(self):
+        self.prepare_bootstrap()
+        (self.bin / "curl").unlink()
         result = self.run_script("build")
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("Nix is not installed", result.stderr)
+        self.assertIn("Install curl first", result.stderr)
+        self.assertFalse(self.capture.exists())
+
+    def test_failed_download_is_not_executed_and_is_cleaned_up(self):
+        self.prepare_bootstrap()
+        self.env["MOCK_DOWNLOAD_STATUS"] = "22"
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 22, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.installer").exists())
+        self.assertFalse(self.capture.exists())
+        self.assertEqual(list(self.work.glob("dots-nix-install.*")), [])
+
+    def test_installer_failure_stops_home_manager_and_is_cleaned_up(self):
+        self.prepare_bootstrap()
+        self.env["MOCK_INSTALL_STATUS"] = "17"
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 17, result.stderr)
+        self.assertFalse(self.capture.exists())
+        self.assertEqual(list(self.work.glob("dots-nix-install.*")), [])
+
+    def test_installer_without_usable_nix_has_actionable_error(self):
+        self.prepare_bootstrap()
+        self.env["MOCK_NO_PROFILE"] = "1"
+        result = self.run_script("build")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nix is still unavailable", result.stderr)
+        self.assertFalse(self.capture.exists())
+
+    def test_bootstrap_switch_preserves_activation_backup(self):
+        self.prepare_bootstrap()
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        args = self.capture.read_text().splitlines()
+        self.assertEqual(args[3], "switch")
+        self.assertEqual(args[-2], "-b")
+        self.assertTrue(Path(f"{self.capture}.installer").exists())
+
+    def test_cancelled_switch_does_not_install_nix(self):
+        self.prepare_bootstrap()
+        result = self.run_script("switch", answer="n\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.curl").exists())
+        self.assertFalse(self.capture.exists())
+
+    def test_invalid_checkout_does_not_install_nix(self):
+        self.prepare_bootstrap()
+        self.env["MOCK_GIT_STATUS"] = "1"
+        result = self.run_script("build")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("git add flake.nix", result.stderr)
+        self.assertFalse(Path(f"{self.capture}.curl").exists())
 
     def test_untracked_flake_is_rejected(self):
         self.env["MOCK_GIT_STATUS"] = "1"

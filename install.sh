@@ -10,8 +10,10 @@ switch  Build and activate after confirmation (default). Back up conflicts.
 
 The default profile is <architecture>-<darwin|linux>.
 The current username, HOME, and checkout path are passed with --impure.
-Run as your own account, not root. Install Nix first. This script does not
-install Nix, change your login shell, remove packages, or install Pi or VTR.
+Run as your own account, not root. If Nix is missing, this script runs the
+official multi-user Nix installer, which can request sudo access. It then
+continues with Home Manager without requiring a new shell. This script does
+not change your login shell, remove packages, or install Pi or VTR.
 EOF
 }
 
@@ -44,12 +46,6 @@ case "$(uname -m)" in
     x86_64|amd64) architecture=x86_64 ;;
     *) echo 'Only 64-bit ARM and x86 are supported.' >&2; exit 1 ;;
 esac
-
-if ! command -v nix >/dev/null 2>&1; then
-    echo 'Nix is not installed or is not on PATH.' >&2
-    echo 'Install Nix, open a new shell, then run this script again. See README.md.' >&2
-    exit 1
-fi
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 profile="${2:-${architecture}-${platform}}"
@@ -84,6 +80,45 @@ if [[ "$action" == switch ]]; then
         *) echo 'Cancelled.'; exit 0 ;;
     esac
     args+=(-b "$backup")
+fi
+
+load_nix() {
+    local profile_script
+    for profile_script in \
+        /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh \
+        "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
+        if [[ -r "$profile_script" ]]; then
+            source "$profile_script"
+            if command -v nix >/dev/null 2>&1; then
+                return 0
+            fi
+        fi
+    done
+}
+
+if ! command -v nix >/dev/null 2>&1; then
+    # Reuse an installation whose shell environment has not been loaded yet.
+    load_nix
+fi
+if ! command -v nix >/dev/null 2>&1; then
+    if ! command -v curl >/dev/null 2>&1; then
+        echo 'Install curl first; it is required to download the Nix installer.' >&2
+        exit 1
+    fi
+    echo 'Installing Nix with the official multi-user installer (sudo may be required).'
+    nix_installer="$(mktemp "${TMPDIR:-/tmp}/dots-nix-install.XXXXXX")"
+    trap 'rm -f -- "$nix_installer"' EXIT
+    # Download completely before executing; do not execute a partial response.
+    curl --fail --show-error --location --proto '=https' --proto-redir '=https' \
+        --output "$nix_installer" https://nixos.org/nix/install
+    sh "$nix_installer" --daemon
+    rm -f -- "$nix_installer"
+    trap - EXIT
+    load_nix
+    if ! command -v nix >/dev/null 2>&1; then
+        echo 'The Nix installer finished, but nix is still unavailable. Check its installation output.' >&2
+        exit 1
+    fi
 fi
 
 exec nix run "$script_dir#home-manager" -- "${args[@]}"
