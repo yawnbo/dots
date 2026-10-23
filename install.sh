@@ -7,13 +7,15 @@ Usage: ./install.sh [build|switch] [profile]
 
 build   Build the Home Manager configuration without activating it.
 switch  Build and activate after confirmation (default). Back up conflicts.
+        Register Nix's Zsh in /etc/shells and set it as your login shell.
 
 The default profile is <architecture>-<darwin|linux>.
 The current username, HOME, and checkout path are passed with --impure.
 Run as your own account, not root. If Nix is missing, this script runs the
 official multi-user Nix installer, which can request sudo access. It then
-continues with Home Manager without requiring a new shell. This script does
-not change your login shell, remove packages, or install Pi or VTR.
+continues with Home Manager without requiring a new shell. A successful switch
+also uses sudo if needed to register and select Zsh. Build leaves the login
+shell unchanged. This script does not remove packages or install Pi or VTR.
 EOF
 }
 
@@ -72,7 +74,7 @@ printf 'Profile: %s\nAccount: %s\nHome: %s\nCheckout: %s\n' \
 args=("$action" --impure --flake "$script_dir#$profile")
 if [[ "$action" == switch ]]; then
     backup="hm-backup-$(date -u +%Y%m%dT%H%M%SZ)-$$"
-    printf 'Apply %s? Conflicting files will be backed up with suffix .%s. [y/N] ' \
+    printf 'Apply %s and set Nix Zsh as your login shell? Conflicting files will be backed up with suffix .%s. [y/N] ' \
         "$profile" "$backup"
     read -r answer || exit 1
     case "$answer" in
@@ -121,4 +123,32 @@ if ! command -v nix >/dev/null 2>&1; then
     fi
 fi
 
-exec nix run "$script_dir#home-manager" -- "${args[@]}"
+nix run "$script_dir#home-manager" -- "${args[@]}"
+
+if [[ "$action" == switch ]]; then
+    # Use the stable profile link, not a store path that can be garbage-collected.
+    login_shell="$HOME/.nix-profile/bin/zsh"
+    if [[ ! -x "$login_shell" ]] || ! "$login_shell" -f -c 'exit 0'; then
+        echo 'Home Manager was activated, but its Zsh cannot start. Login shell unchanged.' >&2
+        exit 1
+    fi
+    case "$platform" in
+        linux)
+            account_record="$(getent passwd "$DOTS_USERNAME")"
+            current_shell="${account_record##*:}"
+            ;;
+        darwin)
+            account_record="$(dscl . -read "/Users/$DOTS_USERNAME" UserShell)"
+            current_shell="${account_record#UserShell: }"
+            ;;
+    esac
+    if ! grep -Fxq -- "$login_shell" /etc/shells; then
+        echo "Registering $login_shell in /etc/shells (sudo may be required)."
+        printf '%s\n' "$login_shell" | sudo tee -a /etc/shells >/dev/null
+    fi
+    if [[ "$current_shell" != "$login_shell" ]]; then
+        echo "Setting the login shell for $DOTS_USERNAME to $login_shell."
+        sudo chsh -s "$login_shell" "$DOTS_USERNAME"
+    fi
+    echo 'Zsh is registered as your login shell. Reconnect or open a new login session.'
+fi

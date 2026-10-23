@@ -37,6 +37,44 @@ class InstallerTests(unittest.TestCase):
         self.stub("nix", '''printf "%s\\n" "$@" > "$CAPTURE"
 printf "%s\\n" "$NIX_CONFIG" > "$CAPTURE.config"
 printf "%s\\n" "$DOTS_USERNAME" "$DOTS_HOME" "$DOTS_CHECKOUT" > "$CAPTURE.identity"''')
+        self.login_shell = self.work / ".nix-profile/bin/zsh"
+        self.login_shell.parent.mkdir(parents=True)
+        self.login_shell.write_text('''#!/bin/sh
+printf '%s\\n' "$@" > "$CAPTURE.zsh-check"
+exit "${MOCK_ZSH_STATUS:-0}"
+''')
+        self.login_shell.chmod(0o755)
+        self.stub("getent", '''test "$1" = passwd
+printf '%s:x:1000:1000::%s:%s\\n' "$2" "$HOME" "${MOCK_LOGIN_SHELL:-/bin/sh}"''')
+        self.stub("dscl", '''test "$1" = .
+test "$2" = -read
+test "$3" = "/Users/$MOCK_USERNAME"
+test "$4" = UserShell
+printf 'UserShell: %s\\n' "${MOCK_LOGIN_SHELL:-/bin/sh}"''')
+        self.stub("grep", '''test "$1" = -Fxq
+test "$2" = --
+test "$4" = /etc/shells
+if [ "${MOCK_SHELL_REGISTERED:-0}" = 1 ] || [ -f "$CAPTURE.registered" ]; then exit 0; fi
+exit 1''')
+        self.stub("sudo", '''printf '%s\\n' "$@" >> "$CAPTURE.sudo"
+if [ "${MOCK_SUDO_STATUS:-0}" != 0 ]; then exit "$MOCK_SUDO_STATUS"; fi
+# Privileged operations must happen only after activation and shell validation.
+test -f "$CAPTURE"
+test -f "$CAPTURE.zsh-check"
+case "$1" in
+    tee)
+        test "$2" = -a
+        test "$3" = /etc/shells
+        IFS= read -r shell
+        printf '%s\\n' "$shell" > "$CAPTURE.registered"
+        ;;
+    chsh)
+        test "$2" = -s
+        test "$4" = "$MOCK_USERNAME"
+        printf '%s\\n' "$@" > "$CAPTURE.chsh"
+        ;;
+    *) exit 99 ;;
+esac''')
 
     def stub(self, name, body):
         path = self.bin / name
@@ -175,6 +213,84 @@ exit "${MOCK_DOWNLOAD_STATUS:-0}"''')
         self.assertEqual(args[3], "switch")
         self.assertEqual(args[-2], "-b")
         self.assertRegex(args[-1], r"^hm-backup-\d{8}T\d{6}Z-\d+$")
+
+    def test_switch_registers_and_selects_profile_zsh_on_both_platforms(self):
+        for system in ["Darwin", "Linux"]:
+            with self.subTest(system=system):
+                for suffix in ["sudo", "registered", "chsh"]:
+                    Path(f"{self.capture}.{suffix}").unlink(missing_ok=True)
+                self.env.update(MOCK_SYSTEM=system, MOCK_USERNAME="yan", USER="wrong-user")
+                result = self.run_script("switch", answer="yes\n")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(Path(f"{self.capture}.registered").read_text().strip(), str(self.login_shell))
+                self.assertEqual(Path(f"{self.capture}.chsh").read_text().splitlines(), [
+                    "chsh", "-s", str(self.login_shell), "yan",
+                ])
+                self.assertEqual(Path(f"{self.capture}.zsh-check").read_text().splitlines(), [
+                    "-f", "-c", "exit 0",
+                ])
+
+    def test_correct_registered_shell_does_not_require_sudo(self):
+        self.env.update(MOCK_SHELL_REGISTERED="1", MOCK_LOGIN_SHELL=str(self.login_shell))
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
+
+    def test_registered_shell_is_not_appended_again(self):
+        self.env["MOCK_SHELL_REGISTERED"] = "1"
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.registered").exists())
+        self.assertEqual(Path(f"{self.capture}.sudo").read_text().splitlines(), [
+            "chsh", "-s", str(self.login_shell), "yawnbo",
+        ])
+
+    def test_current_shell_is_registered_without_redundant_chsh(self):
+        self.env["MOCK_LOGIN_SHELL"] = str(self.login_shell)
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(Path(f"{self.capture}.registered").exists())
+        self.assertFalse(Path(f"{self.capture}.chsh").exists())
+
+    def test_build_does_not_change_login_shell(self):
+        result = self.run_script("build")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(Path(f"{self.capture}.zsh-check").exists())
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
+
+    def test_failed_activation_does_not_change_login_shell(self):
+        self.stub("nix", "exit 17")
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 17)
+        self.assertFalse(Path(f"{self.capture}.zsh-check").exists())
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
+
+    def test_missing_zsh_does_not_change_login_shell(self):
+        self.login_shell.unlink()
+        result = self.run_script("switch", answer="yes\n")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Zsh cannot start", result.stderr)
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
+
+    def test_broken_zsh_does_not_change_login_shell(self):
+        self.env["MOCK_ZSH_STATUS"] = "127"
+        result = self.run_script("switch", answer="yes\n")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Zsh cannot start", result.stderr)
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
+
+    def test_failed_registration_does_not_change_login_shell(self):
+        self.env["MOCK_SUDO_STATUS"] = "1"
+        result = self.run_script("switch", answer="yes\n")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(Path(f"{self.capture}.chsh").exists())
+
+    def test_failed_account_lookup_does_not_change_login_shell(self):
+        self.env["MOCK_SYSTEM"] = "Linux"
+        self.stub("getent", "exit 2")
+        result = self.run_script("switch", answer="yes\n")
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(Path(f"{self.capture}.sudo").exists())
 
     def test_switch_cancellation_does_not_run_nix(self):
         result = self.run_script("switch", answer="n\n")
