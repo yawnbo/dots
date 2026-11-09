@@ -26,9 +26,7 @@ $lua\
 $php\
 $package\
 $docker_context\
-$kubernetes\
 $terraform\
-$aws\
 $gcloud\
 $container\
 $fill\

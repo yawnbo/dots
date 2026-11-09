@@ -30,7 +30,8 @@ Activation still asks for confirmation and backs up conflicting files.
 
 Rust and Cargo are pinned to **1.99.0** through `rust-overlay`. The overlay follows
 our existing Nixpkgs input; this does not upgrade the rest of the package set.
-The Rust toolchain also includes matching rustfmt and Clippy components.
+The Rust toolchain also includes matching rustfmt and Clippy components, plus
+the `aarch64-linux-android` and `wasm32-unknown-unknown` target standard libraries.
 
 Nix installs `libiconv`. On macOS, the default Clang wrapper includes its header
 and library paths, so ordinary Cargo builds can link `-liconv` without a project

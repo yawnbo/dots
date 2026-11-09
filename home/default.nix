@@ -34,7 +34,9 @@ in
       python3 python3Packages.pip lua luarocks luaPackages.luacheck
       # Clang already has priority 10; lowPrio GCC would also be 10 and collide.
       defaultClang clang-tools (lib.setPrio 20 gcc) libiconv gnumake cmake unzip
-      go (rust-bin.stable."1.99.0".default) jdk nodejs_22
+      go (rust-bin.stable."1.99.0".default.override {
+        targets = [ "aarch64-linux-android" "wasm32-unknown-unknown" ];
+      }) jdk nodejs_22
       eslint eslint_d pyright prettier typescript typescript-language-server
       vscode-langservers-extracted lua-language-server gopls rust-analyzer stylua
       aster

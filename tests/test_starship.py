@@ -15,6 +15,11 @@ ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
 class StarshipLayoutTests(unittest.TestCase):
+    def test_cloud_contexts_are_not_in_prompt(self):
+        config = tomllib.loads(CONFIG.read_text())
+        self.assertNotIn("$kubernetes", config["format"])
+        self.assertNotIn("$aws", config["format"])
+
     def test_lorri_is_on_the_right_immediately_before_battery(self):
         config = tomllib.loads(CONFIG.read_text())
         self.assertIn("$fill$memory_usage${custom.lorri}$battery", config["format"])

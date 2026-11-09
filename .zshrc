@@ -266,6 +266,11 @@ fi
 # Optional local opencode installation; do not override Nix-managed commands.
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$PATH:$HOME/.opencode/bin"
 
+# Enable fzf completion and key bindings when installed.
+if [[ -o interactive ]] && (( $+commands[fzf] )); then
+  eval "$(fzf --zsh)"
+fi
+
 # Load Aster after shell plugins so its conservative Tab widget runs first.
 if [[ -o interactive && "${TERM:-dumb}" != "dumb" ]] && (( $+commands[aster] )); then
   eval "$(aster init zsh)"
